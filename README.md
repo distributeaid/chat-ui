@@ -18,8 +18,3 @@ Start the development server
 
     npm start
 
-## Tests
-
-Run the tests
-
-    npm test
