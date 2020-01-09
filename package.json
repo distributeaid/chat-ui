@@ -50,8 +50,30 @@
   },
   "release": {
     "branch": "saga",
-    "remoteTags": true
+    "remoteTags": true,
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@bifravst/semantic-release-github",
+        {
+          "assets": [
+            {
+              "path": "dist/main.js",
+              "name": "distribute-aid-chat-ui.${nextRelease.gitTag}.js",
+              "label": "Chat UI Bundle"
+            }
+          ]
+        }
+      ]
+    ]
   },
+  "files": [
+    "README.md",
+    "dist",
+    "web",
+    "package-lock.json"
+  ],
   "engines": {
     "node": ">=12.0.0",
     "npm": ">=6.0.0"
