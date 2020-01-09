@@ -1,0 +1,9 @@
+{
+  "extends": "@bifravst/code-style/tsconfig.json",
+  "include": ["src/*.tsx", "src/*.ts"],
+  "compilerOptions": {
+    "outDir": "dist/",
+    "jsx": "react",
+    "lib": ["es2019", "DOM"]
+  }
+}
