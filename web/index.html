@@ -22,7 +22,7 @@
     <script src="./main.js"></script>
     <script type="text/javascript">
         window.onload = () => {
-            DAChat({ context: 'public' })
+            DAChat({ context: document.querySelector("meta[name='chat:context']").getAttribute("content") })
         }
     </script>
 </body>

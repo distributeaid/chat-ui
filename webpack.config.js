@@ -21,13 +21,6 @@ const cfg = {
 		react: 'React',
 		'react-dom': 'ReactDOM',
 	},
-	plugins: [
-		// See https://date-fns.org/v2.9.0/docs/webpack
-		new webpack.ContextReplacementPlugin(
-			/date\-fns[\/\\]/,
-			new RegExp(`[/\\\\\](${['en'].join('|')})[/\\\\\]`),
-		),
-	],
 }
 
 module.exports = [
