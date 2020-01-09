@@ -55,11 +55,11 @@
       "@semantic-release/commit-analyzer",
       "@semantic-release/release-notes-generator",
       [
-        "@bifravst/semantic-release-github",
+        "@semantic-release/github",
         {
           "assets": [
             {
-              "path": "dist/main.js",
+              "path": "/home/runner/work/chat-ui/chat-ui/dist/main.js",
               "name": "distribute-aid-chat-ui.${nextRelease.gitTag}.js",
               "label": "Chat UI Bundle"
             }
