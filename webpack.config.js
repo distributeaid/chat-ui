@@ -1,6 +1,8 @@
+const webpack = require('webpack')
+
 const cfg = {
 	resolve: {
-		extensions: ['.ts', '.tsx'],
+		extensions: ['.ts', '.tsx', '.js'],
 	},
 	module: {
 		rules: [
@@ -19,6 +21,13 @@ const cfg = {
 		react: 'React',
 		'react-dom': 'ReactDOM',
 	},
+	plugins: [
+		// See https://date-fns.org/v2.9.0/docs/webpack
+		new webpack.ContextReplacementPlugin(
+			/date\-fns[\/\\]/,
+			new RegExp(`[/\\\\\](${['en'].join('|')})[/\\\\\]`),
+		),
+	],
 }
 
 module.exports = [
@@ -32,9 +41,6 @@ module.exports = [
 		name: 'development',
 		mode: 'development',
 		devtool: 'source-map',
-		resolve: {
-			extensions: [...cfg.resolve.extensions, '.js'],
-		},
 		devServer: {
 			contentBase: './web',
 		},

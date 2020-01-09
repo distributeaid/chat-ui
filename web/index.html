@@ -3,15 +3,28 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Hello React!</title>
+    <title>Distribute Aid: Chat</title>
+    <meta name="chat:context" content="public" />
 </head>
 
 <body>
-    <div id="example"></div>
+    <h1>Distribute Aid: Chat</h1>
+
+    <p>This is the demo page for the <em>Distribute Aid</em> in-app-chat.</p>
+
+    <p>It will be loaded from an external source, and will create it's DOM element with an overlaying chat window.</p>
+
+    <p>Every chat has a <em>context</em>, which needs to be provided. In this example we use the <code>public</code>
+        context, which is a public chat room that is available for all authenticated users.</p>
 
     <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
     <script src="./main.js"></script>
+    <script type="text/javascript">
+        window.onload = () => {
+            DAChat({ context: 'public' })
+        }
+    </script>
 </body>
 
 </html>
