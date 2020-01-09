@@ -66,6 +66,7 @@ const MessageInput = styled.input`
 
 const MessageListContainer = styled.div`
 	width: 100%;
+	background-color: #fff;
 `
 
 export type Message = {
