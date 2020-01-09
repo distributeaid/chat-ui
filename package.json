@@ -7,11 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "Distribute",
-    "Aid",
+    "Distribute Aid",
     "Chat"
   ],
   "author": "Distribute Aid | https://distributeaid.org/",
-  "license": "AGPL-3.0",
+  "license": "AGPL-3.0-only",
   "devDependencies": {}
 }
