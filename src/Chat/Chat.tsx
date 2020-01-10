@@ -4,16 +4,6 @@ import styled from 'styled-components'
 import { v4 } from 'uuid'
 import { MessageItem } from './MessageItem'
 
-const ChatWidget = styled.div`
-	@import url('https://rsms.me/inter/inter.css');
-	position: absolute;
-	z-index: 9999;
-	right: 1rem;
-	bottom: 1rem;
-	font-family: 'Inter', sans-serif;
-	max-width: 350px;
-`
-
 const Header = styled.div`
 	background-color: #3543ec;
 	color: #ffffff;
@@ -186,8 +176,9 @@ export const Chat = ({ context }: { context: string }) => {
 			}
 		}, 250)
 	}
+
 	return (
-		<ChatWidget>
+		<>
 			<Header>
 				<Title>
 					Chat context: <code>{context}</code>
@@ -239,6 +230,6 @@ export const Chat = ({ context }: { context: string }) => {
 					</Footer>
 				</>
 			)}
-		</ChatWidget>
+		</>
 	)
 }

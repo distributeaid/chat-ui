@@ -20,7 +20,11 @@ const cfg = {
 	externals: {
 		react: 'React',
 		'react-dom': 'ReactDOM',
+		Twilio: 'twilio-client',
 	},
+	plugins: [
+		new webpack.EnvironmentPlugin(['GRAPHQL_API_ENDPOINT', 'GRAPHQL_API_KEY']),
+	],
 }
 
 module.exports = [

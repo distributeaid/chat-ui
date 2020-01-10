@@ -29,6 +29,9 @@ jobs:
         run: npm ci --no-audit
       - name: Build
         run: npm run build
+        env:
+          GRAPHQL_API_ENDPOINT: ${{ secrets.GRAPHQL_API_ENDPOINT }}
+          GRAPHQL_API_KEY: ${{ secrets.GRAPHQL_API_KEY }}
       - name: Lint
         run: npm run lint
       - name: Semantic release

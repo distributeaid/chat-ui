@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>Distribute Aid: Chat</title>
-    <meta name="chat:context" content="public" />
+    <meta name="chat:context" content="general" />
 </head>
 
 <body>
@@ -14,11 +14,13 @@
 
     <p>It will be loaded from an external source, and will create it's DOM element with an overlaying chat window.</p>
 
-    <p>Every chat has a <em>context</em>, which needs to be provided. In this example we use the <code>public</code>
+    <p>Every chat has a <em>context</em>, which needs to be provided. In this example we use the <code>general</code>
         context, which is a public chat room that is available for all authenticated users.</p>
 
-    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin>
+    </script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://media.twiliocdn.com/sdk/js/chat/v3.3/twilio-chat.min.js" crossorigin></script>
     <script src="./main.js"></script>
     <script type="text/javascript">
         window.onload = () => {
