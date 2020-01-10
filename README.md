@@ -12,9 +12,15 @@ This provides the UI for the in-app-chat as a standalone micro-frontend.
 
     npm ci
 
+## Configuration
+
+Provide the integration API's settings in the environment variables:
+
+    export GRAPHQL_API_ENDPOINT=https://xxx.appsync-api.yyy.amazonaws.com/graphql
+    export GRAPHQL_API_KEY=xxx-yyy
+
 ## Development
 
 Start the development server
 
     npm start
-
