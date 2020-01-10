@@ -223,6 +223,10 @@ export const Chat = ({
 			})
 	}
 
+	useEffect(() => {
+		loadOlderMessages()
+	}, [])
+
 	return (
 		<>
 			<Header>

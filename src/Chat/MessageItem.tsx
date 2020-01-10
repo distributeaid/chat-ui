@@ -64,6 +64,57 @@ export type Message = {
 	fromUser?: boolean
 }
 
+// See https://www.designedbyaturtle.co.uk/convert-string-to-hexidecimal-colour-with-javascript-vanilla/
+
+const hashString = (str: string) => {
+	let hash = 0,
+		i,
+		chr
+	if (str.length === 0) return hash
+	for (i = 0; i < str.length; i++) {
+		chr = str.charCodeAt(i)
+		hash = (hash << 5) - hash + chr
+		hash |= 0 // Convert to 32bit integer
+	}
+	return hash
+}
+
+// Convert an int to hexadecimal with a max length
+// of six characters.
+const intToARGB = (i: number) => {
+	let hex =
+		((i >> 24) & 0xff).toString(16) +
+		((i >> 16) & 0xff).toString(16) +
+		((i >> 8) & 0xff).toString(16) +
+		(i & 0xff).toString(16)
+	// Sometimes the string returned will be too short so we
+	// add zeros to pad it out, which later get removed if
+	// the length is greater than six.
+	hex += '000000'
+	return hex.substring(0, 6)
+}
+
+/**
+ * From this W3C document: http://www.webmasterworld.com/r.cgi?f=88&d=9769&url=http://www.w3.org/TR/AERT#color-contrast
+ *
+ * Color brightness is determined by the following formula:
+ * ((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000
+ *
+ * @see https://codepen.io/davidhalford/pen/ywEva
+ */
+const contrast = (hex: string) => {
+	const hRed = parseInt(hex.substring(0, 2), 16)
+	const hGreen = parseInt(hex.substring(2, 4), 16)
+	const hBlue = parseInt(hex.substring(4, 6), 16)
+	const cBrightness = (hRed * 299 + hGreen * 587 + hBlue * 114) / 1000
+	const threshold = 130 /* about half of 256. Lower threshold equals more dark text on dark background  */
+	if (cBrightness > threshold) {
+		return false
+	} else {
+		return true
+	}
+}
+
 export const MessageItem = ({
 	message: { from, message, timestamp, fromUser },
 	onRendered,
@@ -76,8 +127,15 @@ export const MessageItem = ({
 	useLayoutEffect(() => {
 		onRendered()
 	})
+
+	const userColor = intToARGB(hashString(from))
 	return (
-		<V>
+		<V
+			style={{
+				backgroundColor: `#${userColor}${contrast(userColor) ? 'FF' : '80'}`,
+				color: `${contrast(userColor) ? 'white' : 'black'}`,
+			}}
+		>
 			<From>{from}</From>
 			<Text>{message}</Text>
 			<Meta>
