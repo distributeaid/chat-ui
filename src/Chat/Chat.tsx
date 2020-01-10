@@ -204,8 +204,10 @@ export const Chat = ({
 		})
 	})
 
-	const loadOlderMessages = () => {
-		setScrollTo('beginning')
+	const loadOlderMessages = (scrollToBeginning = true) => {
+		if (scrollToBeginning) {
+			setScrollTo('beginning')
+		}
 		channel
 			.getMessages(10, messages.lastIndex && messages.lastIndex - 1)
 			.then(messages => {
@@ -224,7 +226,7 @@ export const Chat = ({
 	}
 
 	useEffect(() => {
-		loadOlderMessages()
+		loadOlderMessages(false)
 	}, [])
 
 	return (
@@ -256,7 +258,7 @@ export const Chat = ({
 				<>
 					<MessageListContainer>
 						<MessageList ref={messageListRef}>
-							<TextButton onClick={loadOlderMessages}>
+							<TextButton onClick={() => loadOlderMessages()}>
 								Load older messages
 							</TextButton>
 							{messages.messages.map(m =>
