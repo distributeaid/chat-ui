@@ -1,8 +1,12 @@
 import * as React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import styled from 'styled-components'
+import { MessageItem, Message as MessageItemMessage } from './MessageItem'
+import { StatusItem, Status } from './StatusItem'
+import { Channel } from 'twilio-chat/lib/channel'
+import { Message } from 'twilio-chat/lib/message'
+import { Member } from 'twilio-chat/lib/member'
 import { v4 } from 'uuid'
-import { MessageItem } from './MessageItem'
 
 const Header = styled.div`
 	background-color: #3543ec;
@@ -59,15 +63,6 @@ const MessageListContainer = styled.div`
 	background-color: #fff;
 `
 
-export type Message = {
-	from: string
-	message: string
-	id: string
-	sent: boolean
-	createdAt: Date
-	fromUser?: true
-}
-
 const MessageList = styled.div`
 	min-height: 200px;
 	max-height: 500px;
@@ -76,8 +71,14 @@ const MessageList = styled.div`
 	overflow-y: scroll;
 `
 
-export const Chat = ({ context }: { context: string }) => {
-	const storageKey = `DAChat:minimized:${context}`
+export const Chat = ({
+	channel,
+	identity,
+}: {
+	channel: Channel
+	identity: string
+}) => {
+	const storageKey = `DAChat:minimized:${channel.uniqueName}`
 	const [isMinimized, minimize] = useState<boolean>(
 		window.localStorage.getItem(storageKey) === '1',
 	)
@@ -86,88 +87,21 @@ export const Chat = ({ context }: { context: string }) => {
 		minimize(state)
 	}
 	const [message, setMessage] = useState<string>('')
-	const [messages, updateMessages] = useState<Message[]>([
-		{
-			id: v4(),
-			sent: false,
-			message: 'This is a sample message, which should span multiple lines.',
-			createdAt: new Date(),
-			from: 'John',
-		},
-		{
-			id: v4(),
-			sent: false,
-			message:
-				'This is another sample message, which should span multiple lines. This is another sample message, which should span multiple lines.',
-			createdAt: new Date(),
-			from: 'Jane',
-		},
-
-		{
-			id: v4(),
-			sent: false,
-			message: 'This is a sample message from you.',
-			createdAt: new Date(),
-			from: 'You',
-			fromUser: true,
-		},
-		{
-			id: v4(),
-			sent: false,
-			message:
-				'This is another sample message, which should span multiple lines. This is another sample message, which should span multiple lines.',
-			createdAt: new Date(),
-			from: 'Jane',
-		},
-		{
-			id: v4(),
-			sent: false,
-			message:
-				'This is another sample message, which should span multiple lines. This is another sample message, which should span multiple lines.',
-			createdAt: new Date(),
-			from: 'Jane',
-		},
-		{
-			id: v4(),
-			sent: false,
-			message:
-				'This is another sample message, which should span multiple lines. This is another sample message, which should span multiple lines.',
-			createdAt: new Date(),
-			from: 'Jane',
-		},
-		{
-			id: v4(),
-			sent: false,
-			message:
-				'This is another sample message, which should span multiple lines. This is another sample message, which should span multiple lines.',
-			createdAt: new Date(),
-			from: 'Jane',
-		},
-		{
-			id: v4(),
-			sent: false,
-			message:
-				'This is another sample message, which should span multiple lines. This is another sample message, which should span multiple lines.',
-			createdAt: new Date(),
-			from: 'Jane',
-		},
-	])
+	const [messages, updateMessages] = useState<
+		(
+			| { sid: string; message: MessageItemMessage }
+			| { sid: string; status: Status }
+		)[]
+	>([])
 
 	const messageListRef = React.createRef<HTMLDivElement>()
 	let currentMessageListRef = messageListRef.current
 
 	const sendMessage = () => {
-		updateMessages([
-			...messages,
-			{
-				id: v4(),
-				sent: false,
-				message,
-				createdAt: new Date(),
-				from: 'You',
-				fromUser: true,
-			},
-		])
+		channel.sendMessage(message).catch(err => {
+			console.error(err)
+			setMessage(message)
+		})
 		setMessage('')
 		currentMessageListRef = messageListRef.current
 		setTimeout(() => {
@@ -177,11 +111,63 @@ export const Chat = ({ context }: { context: string }) => {
 		}, 250)
 	}
 
+	const newMessageHandler = (message: Message) => {
+		updateMessages(prevMessages => [
+			...prevMessages,
+			{
+				sid: message.sid,
+				message: {
+					timestamp: message.timestamp,
+					from: message.author,
+					message: message.body,
+					fromUser: message.author === identity,
+				},
+			},
+		])
+	}
+
+	const memberJoinedHandler = (member: Member) => {
+		updateMessages(prevMessages => [
+			...prevMessages,
+			{
+				sid: v4(),
+				status: {
+					message: `${member.identity} joined.`,
+					timestamp: new Date(),
+				},
+			},
+		])
+	}
+
+	const memberLeftHandler = (member: Member) => {
+		updateMessages(prevMessages => [
+			...prevMessages,
+			{
+				sid: v4(),
+				status: {
+					message: `${member.identity} left.`,
+					timestamp: new Date(),
+				},
+			},
+		])
+	}
+
+	useEffect(() => {
+		channel.on('messageAdded', newMessageHandler)
+		channel.on('memberJoined', memberJoinedHandler)
+		channel.on('memberLeft', memberLeftHandler)
+		return () => {
+			channel.removeListener('messageAdded', newMessageHandler)
+			channel.removeListener('memberJoined', memberJoinedHandler)
+			channel.removeListener('memberLeft', memberLeftHandler)
+		}
+	}, [channel])
+
 	return (
 		<>
 			<Header>
 				<Title>
-					Chat context: <code>{context}</code>
+					Chat: <strong>#{channel.uniqueName}</strong>
 				</Title>
 				{!isMinimized && (
 					<MinimizeButton
@@ -206,9 +192,13 @@ export const Chat = ({ context }: { context: string }) => {
 				<>
 					<MessageListContainer>
 						<MessageList ref={messageListRef}>
-							{messages.map(m => (
-								<MessageItem key={m.id} message={m} />
-							))}
+							{messages.map(m =>
+								'status' in m ? (
+									<StatusItem key={m.sid} status={m.status} />
+								) : (
+									<MessageItem key={m.sid} message={m.message} />
+								),
+							)}
 						</MessageList>
 					</MessageListContainer>
 					<Footer>

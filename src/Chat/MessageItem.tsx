@@ -1,6 +1,5 @@
 import * as React from 'react'
 import styled from 'styled-components'
-import { Message } from './Chat'
 import { TimeAgo } from './TimeAgo'
 
 const MessageView = styled.div`
@@ -25,7 +24,7 @@ const Meta = styled.div`
 	align-items: center;
 	font-size: 80%;
 	font-weight: 300;
-	margin: 0.5rem 0.5rem 0.5rem 0.5rem;
+	margin: 0 0.5rem 0.5rem 0.5rem;
 	padding-bottom: 0.5rem;
 	opacity: 0.85;
 `
@@ -54,11 +53,18 @@ const RedIndicator = styled(GreenIndicator)`
 	background-color: #f00;
 `
 
-const Status = ({ sent }: { sent: boolean }) =>
+export const Status = ({ sent }: { sent: boolean }) =>
 	sent ? <GreenIndicator /> : <RedIndicator />
 
+export type Message = {
+	from: string
+	message: string
+	timestamp: Date
+	fromUser?: boolean
+}
+
 export const MessageItem = ({
-	message: { from, sent, message, createdAt, fromUser },
+	message: { from, message, timestamp, fromUser },
 }: {
 	message: Message
 }) => {
@@ -68,8 +74,7 @@ export const MessageItem = ({
 			<From>{from}</From>
 			<Text>{message}</Text>
 			<Meta>
-				<TimeAgo from={createdAt} />
-				{fromUser && <Status sent={sent} />}
+				<TimeAgo from={timestamp} />
 			</Meta>
 		</V>
 	)
