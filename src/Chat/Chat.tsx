@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useLayoutEffect } from 'react'
 import styled from 'styled-components'
 import { MessageItem, Message as MessageItemMessage } from './MessageItem'
 import { StatusItem, Status } from './StatusItem'
@@ -21,6 +21,19 @@ const Header = styled.div`
 
 const Title = styled.div`
 	margin: 0.5rem 0.5rem 0.5rem 1rem;
+`
+
+const TextButton = styled.button`
+	font-family: 'Inter', sans-serif;
+	background-color: transparent;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	color: #1c465a;
+	text-decoration: underline;
+	width: 100%;
+	text-align: center;
+	cursor: pointer;
 `
 
 const Button = styled.button`
@@ -87,15 +100,13 @@ export const Chat = ({
 		minimize(state)
 	}
 	const [message, setMessage] = useState<string>('')
-	const [messages, updateMessages] = useState<
-		(
+	const [messages, updateMessages] = useState<{
+		messages: (
 			| { sid: string; message: MessageItemMessage }
 			| { sid: string; status: Status }
 		)[]
-	>([])
-
-	const messageListRef = React.createRef<HTMLDivElement>()
-	let currentMessageListRef = messageListRef.current
+		lastIndex?: number
+	}>({ messages: [] })
 
 	const sendMessage = () => {
 		channel.sendMessage(message).catch(err => {
@@ -103,12 +114,6 @@ export const Chat = ({
 			setMessage(message)
 		})
 		setMessage('')
-		currentMessageListRef = messageListRef.current
-		setTimeout(() => {
-			if (currentMessageListRef) {
-				currentMessageListRef.scrollTop = currentMessageListRef.scrollHeight
-			}
-		}, 250)
 	}
 
 	const toMessage = (message: Message) => ({
@@ -122,45 +127,101 @@ export const Chat = ({
 	})
 
 	const newMessageHandler = (message: Message) => {
-		updateMessages(prevMessages => [...prevMessages, toMessage(message)])
+		updateMessages(prevMessages => ({
+			...prevMessages,
+			messages: [...prevMessages.messages, toMessage(message)],
+			lastIndex: prevMessages.lastIndex
+				? prevMessages.lastIndex
+				: message.index,
+		}))
 	}
 
 	const memberJoinedHandler = (member: Member) => {
-		updateMessages(prevMessages => [
+		updateMessages(prevMessages => ({
 			...prevMessages,
-			{
-				sid: v4(),
-				status: {
-					message: `${member.identity} joined.`,
-					timestamp: new Date(),
+			messages: [
+				...prevMessages.messages,
+				{
+					sid: v4(),
+					status: {
+						message: `${member.identity} joined.`,
+						timestamp: new Date(),
+					},
 				},
-			},
-		])
+			],
+		}))
 	}
 
 	const memberLeftHandler = (member: Member) => {
-		updateMessages(prevMessages => [
+		updateMessages(prevMessages => ({
 			...prevMessages,
-			{
-				sid: v4(),
-				status: {
-					message: `${member.identity} left.`,
-					timestamp: new Date(),
+			messages: [
+				...prevMessages.messages,
+				{
+					sid: v4(),
+					status: {
+						message: `${member.identity} left.`,
+						timestamp: new Date(),
+					},
 				},
-			},
-		])
+			],
+		}))
 	}
 
 	useEffect(() => {
 		channel.on('messageAdded', newMessageHandler)
 		channel.on('memberJoined', memberJoinedHandler)
 		channel.on('memberLeft', memberLeftHandler)
+
 		return () => {
 			channel.removeListener('messageAdded', newMessageHandler)
 			channel.removeListener('memberJoined', memberJoinedHandler)
 			channel.removeListener('memberLeft', memberLeftHandler)
 		}
 	}, [channel])
+
+	const messageListRef = React.createRef<HTMLDivElement>()
+	let scrollToTimeout: number
+	const [scrollTo, setScrollTo] = useState<'beginning' | 'end' | 'undefined'>(
+		'end',
+	)
+
+	useLayoutEffect(() => {
+		messageListRef.current?.addEventListener('scroll', () => {
+			if (messageListRef.current) {
+				if (messageListRef.current.scrollTop === 0) {
+					setScrollTo('beginning')
+				} else if (
+					messageListRef.current.scrollTop +
+						messageListRef.current.clientHeight ===
+					messageListRef.current.scrollHeight
+				) {
+					setScrollTo('end')
+				} else {
+					setScrollTo('undefined')
+				}
+			}
+		})
+	})
+
+	const loadOlderMessages = () => {
+		setScrollTo('beginning')
+		channel
+			.getMessages(10, messages.lastIndex && messages.lastIndex - 1)
+			.then(messages => {
+				updateMessages(prevMessages => ({
+					...prevMessages,
+					messages: [
+						...messages.items.map(toMessage),
+						...prevMessages.messages,
+					],
+					lastIndex: messages.items[0].index,
+				}))
+			})
+			.catch(err => {
+				console.error(err)
+			})
+	}
 
 	return (
 		<>
@@ -191,11 +252,31 @@ export const Chat = ({
 				<>
 					<MessageListContainer>
 						<MessageList ref={messageListRef}>
-							{messages.map(m =>
+							<TextButton onClick={loadOlderMessages}>
+								Load older messages
+							</TextButton>
+							{messages.messages.map(m =>
 								'status' in m ? (
 									<StatusItem key={m.sid} status={m.status} />
 								) : (
-									<MessageItem key={m.sid} message={m.message} />
+									<MessageItem
+										key={m.sid}
+										message={m.message}
+										onRendered={() => {
+											// Scroll to the last item in the list
+											// if not at beginning
+											if (scrollTo !== 'end') return
+											if (scrollToTimeout) {
+												clearTimeout(scrollToTimeout)
+											}
+											scrollToTimeout = setTimeout(() => {
+												if (messageListRef.current) {
+													messageListRef.current.scrollTop =
+														messageListRef.current.scrollHeight
+												}
+											}, 250)
+										}}
+									/>
 								),
 							)}
 						</MessageList>

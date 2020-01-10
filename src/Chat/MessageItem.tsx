@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useLayoutEffect } from 'react'
 import styled from 'styled-components'
 import { TimeAgo } from './TimeAgo'
 
@@ -65,10 +66,16 @@ export type Message = {
 
 export const MessageItem = ({
 	message: { from, message, timestamp, fromUser },
+	onRendered,
 }: {
 	message: Message
+	onRendered: () => void
 }) => {
 	const V = fromUser ? UserMessageView : MessageView
+
+	useLayoutEffect(() => {
+		onRendered()
+	})
 	return (
 		<V>
 			<From>{from}</From>
