@@ -97,7 +97,7 @@ export const Widget = ({
 	return (
 		<ChatWidget>
 			{chatToken && <Chat context={context} />}
-			{!chatToken && <Loading />}
+			{!error && !chatToken && <Loading />}
 			{error && <Error type={error.type} message={error.message} />}
 		</ChatWidget>
 	)

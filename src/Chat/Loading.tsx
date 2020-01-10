@@ -7,7 +7,14 @@ const Header = styled.div`
 	font-weight: 300;
 	font-family: 'Inter', sans-serif;
 	width: 100%;
+`
+const Text = styled.p`
+	margin: 0;
 	padding: 0.5rem 0.5rem 0.5rem 1rem;
 `
 
-export const Loading = () => <Header>Loading ...</Header>
+export const Loading = () => (
+	<Header>
+		<Text>Loading ...</Text>
+	</Header>
+)

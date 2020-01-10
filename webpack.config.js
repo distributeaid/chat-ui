@@ -1,4 +1,7 @@
 const webpack = require('webpack')
+const fs = require('fs')
+const path = require('path')
+const Handlebars = require('handlebars')
 
 const cfg = {
 	resolve: {
@@ -22,10 +25,10 @@ const cfg = {
 		'react-dom': 'ReactDOM',
 		Twilio: 'twilio-client',
 	},
-	plugins: [
-		new webpack.EnvironmentPlugin(['GRAPHQL_API_ENDPOINT', 'GRAPHQL_API_KEY']),
-	],
 }
+
+const replaceEnv = html =>
+	Object.entries(process.env).reduce((html, [k, v]) => html.replace(``), html)
 
 module.exports = [
 	{
@@ -40,6 +43,17 @@ module.exports = [
 		devtool: 'source-map',
 		devServer: {
 			contentBase: './web',
+			before: (app, server, compiler) => {
+				app.get('/', (req, res) => {
+					const html = fs.readFileSync(
+						path.join(process.cwd(), 'web', 'index.html'),
+						'utf-8',
+					)
+					const tpl = Handlebars.compile(html)
+					res.set('Content-Type', 'text/html')
+					res.send(tpl(process.env))
+				})
+			},
 		},
 		module: {
 			rules: [

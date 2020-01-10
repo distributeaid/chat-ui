@@ -5,15 +5,23 @@ import { v4 } from 'uuid'
 import { Widget } from './Chat/Widget'
 import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client'
 
-export const chat = ({ context }: { context: string }) => {
+export const chat = ({
+	context,
+	apiEndpoint,
+	apiKey,
+}: {
+	context: string
+	apiEndpoint: string
+	apiKey: string
+}) => {
 	const div = document.createElement('div')
 	div.id = 'distribute-aid-chat'
 	document.documentElement.appendChild(div)
 
 	const httpLink = createHttpLink({
-		uri: process.env.GRAPHQL_API_ENDPOINT,
+		uri: apiEndpoint,
 		headers: {
-			'x-api-key': process.env.GRAPHQL_API_KEY,
+			'x-api-key': apiKey,
 		},
 	})
 
@@ -25,8 +33,8 @@ export const chat = ({ context }: { context: string }) => {
 	const deviceId = v4()
 
 	console.log('DAChat', {
-		endpoint: process.env.GRAPHQL_API_ENDPOINT,
-		apiKey: process.env.GRAPHQL_API_KEY,
+		endpoint: apiEndpoint,
+		apiKey: apiKey,
 		deviceId,
 	})
 
