@@ -12,6 +12,8 @@ import { Error } from './Error'
 import { Chat } from './Chat'
 import * as Twilio from 'twilio-chat'
 import { Channel } from 'twilio-chat/lib/channel'
+import { v4 } from 'uuid'
+import { log } from '../log'
 
 const ChatWidget = styled.div`
 	@import url('https://rsms.me/inter/inter.css');
@@ -32,6 +34,11 @@ export const Widget = ({
 	deviceId: string
 	apollo: ApolloClient<NormalizedCacheObject>
 }) => {
+	const storageKey = `DAChat:identity`
+	const identity =
+		window.localStorage.getItem(storageKey) || `anonymous-${v4()}`
+	window.localStorage.setItem(storageKey, identity)
+
 	const [error, setError] = useState<{ type: string; message: string }>()
 	const [channelConnection, setChannelConnection] = useState<{
 		channel: Channel
@@ -42,7 +49,7 @@ export const Widget = ({
 		apollo
 			.mutate<ChatTokenMutationResult, ChatTokenVariables>({
 				mutation: createChatTokenMutation,
-				variables: { deviceId },
+				variables: { deviceId, identity },
 			})
 			.then(({ data }) => {
 				if (!data) {
@@ -55,8 +62,7 @@ export const Widget = ({
 				const {
 					createChatToken: { identity, jwt },
 				} = data
-				console.log('DAChat:identity', identity)
-				console.log('DAChat:jwt', jwt)
+				log({ identity, jwt })
 				return Twilio.Client.create(jwt).then(client => {
 					if (!client) {
 						setError({
@@ -66,12 +72,18 @@ export const Widget = ({
 						return
 					}
 					return client
-						.getChannelByUniqueName(context)
-						.then(async channel => {
-							console.log(channel)
-							return channel.join()
-						})
-						.then(async channel => {
+						.getSubscribedChannels()
+						.then(channels =>
+							channels.items.find(({ uniqueName }) => uniqueName === context),
+						)
+						.then(
+							channel =>
+								channel ||
+								client
+									.getChannelByUniqueName(context)
+									.then(async channel => channel.join()),
+						)
+						.then(channel => {
 							setChannelConnection({
 								channel,
 								identity,

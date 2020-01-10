@@ -4,6 +4,7 @@ import * as ReactDOM from 'react-dom'
 import { v4 } from 'uuid'
 import { Widget } from './Chat/Widget'
 import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client'
+import { log } from './log'
 
 export const chat = ({
 	context,
@@ -32,11 +33,7 @@ export const chat = ({
 
 	const deviceId = v4()
 
-	console.log('DAChat', {
-		endpoint: apiEndpoint,
-		apiKey: apiKey,
-		deviceId,
-	})
+	log({ apiEndpoint, apiKey, deviceId })
 
 	ReactDOM.render(
 		<Widget context={context} apollo={client} deviceId={deviceId} />,

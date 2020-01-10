@@ -4,6 +4,7 @@
   "compilerOptions": {
     "outDir": "dist/",
     "jsx": "react",
-    "lib": ["es2019", "DOM"]
+    "lib": ["DOM"],
+    "target": "es2018"
   }
 }

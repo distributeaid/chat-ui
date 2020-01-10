@@ -1,8 +1,8 @@
 import gql from 'graphql-tag'
 
 export const createChatTokenMutation = gql`
-	mutation createChatToken($deviceId: ID!) {
-		createChatToken(deviceId: $deviceId) {
+	mutation createChatToken($deviceId: ID!, $identity: ID!) {
+		createChatToken(deviceId: $deviceId, identity: $identity) {
 			identity
 			jwt
 		}
@@ -20,4 +20,5 @@ export type ChatTokenMutationResult = {
 
 export type ChatTokenVariables = {
 	deviceId: string
+	identity: string
 }

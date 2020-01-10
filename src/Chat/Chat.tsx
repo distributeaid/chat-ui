@@ -111,19 +111,18 @@ export const Chat = ({
 		}, 250)
 	}
 
+	const toMessage = (message: Message) => ({
+		sid: message.sid,
+		message: {
+			timestamp: message.timestamp,
+			from: message.author,
+			message: message.body,
+			fromUser: message.author === identity,
+		},
+	})
+
 	const newMessageHandler = (message: Message) => {
-		updateMessages(prevMessages => [
-			...prevMessages,
-			{
-				sid: message.sid,
-				message: {
-					timestamp: message.timestamp,
-					from: message.author,
-					message: message.body,
-					fromUser: message.author === identity,
-				},
-			},
-		])
+		updateMessages(prevMessages => [...prevMessages, toMessage(message)])
 	}
 
 	const memberJoinedHandler = (member: Member) => {
