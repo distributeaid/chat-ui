@@ -24,3 +24,9 @@ Provide the integration API's settings in the environment variables:
 Start the development server
 
     npm start
+
+### Tokens
+
+The chat expects a valid JWT which will be verified by the integration, follow
+[the instructions here](https://github.com/distributeaid/twilio-integration#generating-keypairs)
+to create a token.
