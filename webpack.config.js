@@ -23,7 +23,7 @@ const cfg = {
 	externals: {
 		react: 'React',
 		'react-dom': 'ReactDOM',
-		Twilio: 'twilio-client',
+		'twilio-chat': ['Twilio', 'Chat'],
 	},
 }
 
