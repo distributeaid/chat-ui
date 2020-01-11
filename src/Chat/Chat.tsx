@@ -7,6 +7,8 @@ import { Channel } from 'twilio-chat/lib/channel'
 import { Message } from 'twilio-chat/lib/message'
 import { Member } from 'twilio-chat/lib/member'
 import { v4 } from 'uuid'
+import { SlashCommandHandler, SlashCommand } from './SlashCommands'
+import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 
 const Header = styled.div`
 	background-color: #3543ec;
@@ -87,9 +89,13 @@ const MessageList = styled.div`
 export const Chat = ({
 	channel,
 	identity,
+	apollo,
+	token,
 }: {
 	channel: Channel
 	identity: string
+	apollo: ApolloClient<NormalizedCacheObject>
+	token: string
 }) => {
 	const storageKey = `DAChat:minimized:${channel.uniqueName}`
 	const [isMinimized, minimize] = useState<boolean>(
@@ -106,13 +112,33 @@ export const Chat = ({
 			| { sid: string; status: Status }
 		)[]
 		lastIndex?: number
-	}>({ messages: [] })
+	}>({
+		messages: [
+			{
+				sid: v4(),
+				status: {
+					message: `Hint: type /help to list available commands.`,
+					timestamp: new Date(),
+				},
+			},
+		],
+	})
 
+	const onSlashCommand = SlashCommandHandler({ apollo, updateMessages, token })
 	const sendMessage = () => {
-		channel.sendMessage(message).catch(err => {
-			console.error(err)
-			setMessage(message)
-		})
+		switch (message) {
+			case '/me':
+				onSlashCommand(SlashCommand.ME)
+				break
+			case '/help':
+				onSlashCommand(SlashCommand.HELP)
+				break
+			default:
+				channel.sendMessage(message).catch(err => {
+					console.error(err)
+					setMessage(message)
+				})
+		}
 		setMessage('')
 	}
 

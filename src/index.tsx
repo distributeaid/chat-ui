@@ -10,10 +10,12 @@ export const chat = ({
 	context,
 	apiEndpoint,
 	apiKey,
+	token,
 }: {
 	context: string
 	apiEndpoint: string
 	apiKey: string
+	token: string
 }) => {
 	const div = document.createElement('div')
 	div.id = 'distribute-aid-chat'
@@ -33,10 +35,15 @@ export const chat = ({
 
 	const deviceId = v4()
 
-	log({ apiEndpoint, apiKey, deviceId })
+	log({ apiEndpoint, apiKey, deviceId, token })
 
 	ReactDOM.render(
-		<Widget context={context} apollo={client} deviceId={deviceId} />,
+		<Widget
+			context={context}
+			apollo={client}
+			deviceId={deviceId}
+			token={token}
+		/>,
 		div,
 	)
 }

@@ -12,7 +12,6 @@ import { Error } from './Error'
 import { Chat } from './Chat'
 import * as Twilio from 'twilio-chat'
 import { Channel } from 'twilio-chat/lib/channel'
-import { v4 } from 'uuid'
 import { log } from '../log'
 
 const ChatWidget = styled.div`
@@ -24,21 +23,18 @@ const ChatWidget = styled.div`
 	font-family: 'Inter', sans-serif;
 	max-width: 350px;
 `
-
 export const Widget = ({
 	context,
 	apollo,
 	deviceId,
+	token,
 }: {
 	context: string
 	deviceId: string
 	apollo: ApolloClient<NormalizedCacheObject>
+	token: string
 }) => {
-	const storageKey = `DAChat:identity`
-	const identity =
-		window.localStorage.getItem(storageKey) || `anonymous-${v4()}`
-	window.localStorage.setItem(storageKey, identity)
-
+	const identity = JSON.parse(atob(token.split('.')[1])).sub
 	const [error, setError] = useState<{ type: string; message: string }>()
 	const [channelConnection, setChannelConnection] = useState<{
 		channel: Channel
@@ -49,7 +45,7 @@ export const Widget = ({
 		apollo
 			.mutate<ChatTokenMutationResult, ChatTokenVariables>({
 				mutation: createChatTokenMutation,
-				variables: { deviceId, identity },
+				variables: { deviceId, token },
 			})
 			.then(({ data }) => {
 				if (!data) {
@@ -59,11 +55,9 @@ export const Widget = ({
 					})
 					return
 				}
-				const {
-					createChatToken: { identity, jwt },
-				} = data
-				log({ identity, jwt })
-				return Twilio.Client.create(jwt).then(client => {
+				const { createChatToken: chatToken } = data
+				log({ chatToken })
+				return Twilio.Client.create(chatToken).then(client => {
 					if (!client) {
 						setError({
 							type: 'IntegrationError',
@@ -105,6 +99,8 @@ export const Widget = ({
 				<Chat
 					channel={channelConnection.channel}
 					identity={channelConnection.identity}
+					apollo={apollo}
+					token={token}
 				/>
 			)}
 			{!error && !channelConnection && <Loading />}

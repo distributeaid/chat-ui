@@ -7,6 +7,11 @@
     <meta name="chat:context" content="general" />
     <meta name="chat:endpoint" content="{{GRAPHQL_API_ENDPOINT}}" />
     <meta name="chat:apiKey" content="{{GRAPHQL_API_KEY}}" />
+    <style type="text/css">
+        textarea {
+            width: 100%;
+        }
+    </style>
 </head>
 
 <body>
@@ -21,17 +26,71 @@
 
     <p>The API endpoint of the integration for this instance is <code>{{GRAPHQL_API_ENDPOINT}}</code>.</p>
 
+    <div id="tokenform"></div>
+
     <script src="https://unpkg.com/react@16/umd/react.development.js" defer></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" defer></script>
     <script src="https://media.twiliocdn.com/sdk/js/chat/v3.3/twilio-chat.min.js" defer></script>
     <script src="./main.js" defer></script>
     <script type="text/javascript">
+
+        const parseToken = (token) => {
+            try {
+                const [header, payload] = token.split('.')
+                return {
+                    header: JSON.parse(atob(header)),
+                    payload: JSON.parse(atob(payload)),
+                }
+            } catch (err) {
+                console.error(err)
+                return {
+                    header: {},
+                    payload: {}
+                }
+            }
+        }
+
+        const launchChat = token => DAChat({
+            context: document.querySelector("meta[name='chat:context']").getAttribute("content"),
+            apiKey: document.querySelector("meta[name='chat:apiKey']").getAttribute("content"),
+            apiEndpoint: document.querySelector("meta[name='chat:endpoint']").getAttribute("content"),
+            token,
+        })
+
         window.onload = () => {
-            DAChat({
-                context: document.querySelector("meta[name='chat:context']").getAttribute("content"),
-                apiKey: document.querySelector("meta[name='chat:apiKey']").getAttribute("content"),
-                apiEndpoint: document.querySelector("meta[name='chat:endpoint']").getAttribute("content"),
-            })
+            const e = React.createElement;
+
+            const Token = ({ header, payload }) => [
+                e('div', { key: 1 }, e('pre', {}, JSON.stringify(header, null, 2))),
+                e('div', { key: 2 }, e('pre', {}, JSON.stringify(payload, null, 2))),
+            ]
+
+            const TokenForm = () => {
+                const [token, updateToken] = React.useState(window.localStorage.getItem('token') || '')
+                const [hasChat, setHasChat] = React.useState(false)
+                const memoToken = (token) => {
+                    window.localStorage.setItem('token', token)
+                    updateToken(token)
+                }
+
+                React.useEffect(() => {
+                    if (token && !hasChat) {
+                        setHasChat(true)
+                        launchChat(token)
+                    }
+                })
+
+                return e('form', { onSubmit: e => e.preventDefault() },
+                    e('fieldset', {}, [
+                        e('legend', { key: 1 }, 'Token'),
+                        e('textarea', { key: 2, placeholder: 'Paste your token here', value: token, onChange: ({ target: { value } }) => memoToken(value) }, ''),
+                        (token.length && e('div', { key: 3 }, Token(parseToken(token)))) || null
+                    ])
+                );
+            }
+
+            const domContainer = document.querySelector('#tokenform');
+            ReactDOM.render(e(TokenForm), domContainer);
         }
     </script>
 </body>
