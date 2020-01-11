@@ -1,29 +1,20 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import styled from 'styled-components'
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import {
 	createChatTokenMutation,
 	ChatTokenMutationResult,
 	ChatTokenVariables,
-} from '../graphql/createChatTokenMutation'
-import { Loading } from './Loading'
-import { Error } from './Error'
-import { Chat } from './Chat'
+} from '../../graphql/createChatTokenMutation'
+import { Loading } from '../components/Loading'
+import { Error } from '../components/Error'
+import { ChannelView } from './ChannelView'
 import * as Twilio from 'twilio-chat'
 import { Channel } from 'twilio-chat/lib/channel'
-import { log } from '../log'
+import { log } from '../../log'
+import { ChatWidget } from '../components/ChatWidget'
 
-const ChatWidget = styled.div`
-	@import url('https://rsms.me/inter/inter.css');
-	position: absolute;
-	z-index: 9999;
-	right: 1rem;
-	bottom: 1rem;
-	font-family: 'Inter', sans-serif;
-	max-width: 350px;
-`
-export const Widget = ({
+export const TwilioChat = ({
 	context,
 	apollo,
 	deviceId,
@@ -96,7 +87,7 @@ export const Widget = ({
 	return (
 		<ChatWidget>
 			{channelConnection && (
-				<Chat
+				<ChannelView
 					channel={channelConnection.channel}
 					identity={channelConnection.identity}
 					apollo={apollo}

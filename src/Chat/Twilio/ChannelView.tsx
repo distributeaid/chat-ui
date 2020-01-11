@@ -1,92 +1,29 @@
 import * as React from 'react'
 import { useState, useEffect, useLayoutEffect } from 'react'
-import styled from 'styled-components'
-import { MessageItem, Message as MessageItemMessage } from './MessageItem'
-import { StatusItem, Status } from './StatusItem'
+import {
+	MessageItem,
+	Message as MessageItemMessage,
+} from '../components/MessageItem'
+import { StatusItem, Status } from '../components/StatusItem'
 import { Channel } from 'twilio-chat/lib/channel'
 import { Message } from 'twilio-chat/lib/message'
 import { Member } from 'twilio-chat/lib/member'
 import { v4 } from 'uuid'
-import { SlashCommandHandler, SlashCommand } from './SlashCommands'
+import { SlashCommandHandler, SlashCommand } from '../SlashCommands'
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
+import {
+	Header,
+	Title,
+	Footer,
+	MinimizeButton,
+	MessageListContainer,
+	MessageList,
+	TextButton,
+	MessageInput,
+	SendButton,
+} from '../components/ChannelView'
 
-const Header = styled.div`
-	background-color: #3543ec;
-	color: #ffffff;
-	display: flex;
-	justify-content: space-between;
-	font-weight: 300;
-	font-family: 'Inter', sans-serif;
-	align-items: center;
-	width: 100%;
-`
-
-const Title = styled.div`
-	margin: 0.5rem 0.5rem 0.5rem 1rem;
-`
-
-const TextButton = styled.button`
-	font-family: 'Inter', sans-serif;
-	background-color: transparent;
-	border: 0;
-	margin: 0;
-	padding: 0;
-	color: #1c465a;
-	text-decoration: underline;
-	width: 100%;
-	text-align: center;
-	cursor: pointer;
-`
-
-const Button = styled.button`
-	font-family: 'Inter', sans-serif;
-	background-color: transparent;
-	border: 1px solid;
-	height: 30px;
-	margin: 0.5rem;
-`
-
-const MinimizeButton = styled(Button)`
-	width: 30px;
-	border-color: #fff;
-	${Header} & {
-		color: inherit;
-	}
-`
-
-const Footer = styled(Header)`
-	background-color: #d8d8d8;
-`
-
-const SendButton = styled(Button)`
-	background-color: #fff;
-	margin-left: 0.5rem;
-`
-
-const MessageInput = styled.input`
-	flex-grow: 1;
-	font-family: 'Inter', sans-serif;
-	background-color: #fff;
-	border: 1px solid;
-	height: 28px;
-	padding: 0 0.5rem;
-	margin-left: 0.5rem;
-`
-
-const MessageListContainer = styled.div`
-	width: 100%;
-	background-color: #fff;
-`
-
-const MessageList = styled.div`
-	min-height: 200px;
-	max-height: 500px;
-	border-right: 1px solid #ccc;
-	border-left: 1px solid #ccc;
-	overflow-y: scroll;
-`
-
-export const Chat = ({
+export const ChannelView = ({
 	channel,
 	identity,
 	apollo,

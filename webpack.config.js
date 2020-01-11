@@ -1,9 +1,12 @@
-const webpack = require('webpack')
 const fs = require('fs')
 const path = require('path')
 const Handlebars = require('handlebars')
 
 const cfg = {
+	entry: {
+		main: './src/index.tsx',
+		demo: './src/demo.tsx',
+	},
 	resolve: {
 		extensions: ['.ts', '.tsx', '.js'],
 	},

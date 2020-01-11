@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useLayoutEffect } from 'react'
 import styled from 'styled-components'
-import { TimeAgo } from './TimeAgo'
+import { Timestamp } from './Timestamp'
 
 const MessageView = styled.div`
 	border-radius: 10px;
@@ -139,7 +139,7 @@ export const MessageItem = ({
 			<From>{from}</From>
 			<Text>{message}</Text>
 			<Meta>
-				<TimeAgo from={timestamp} />
+				<Timestamp from={timestamp} />
 			</Meta>
 		</V>
 	)

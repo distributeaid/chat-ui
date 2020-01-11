@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
-import { Message as MessageItemMessage } from './MessageItem'
-import { Status } from './StatusItem'
+import { Message as MessageItemMessage } from './components/MessageItem'
+import { Status } from './components/StatusItem'
 import { v4 } from 'uuid'
 import {
 	verifyTokenQuery,
