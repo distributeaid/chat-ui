@@ -12,19 +12,20 @@ import {
 export enum SlashCommand {
 	HELP = 'help',
 	ME = 'me',
+	JOIN = 'join',
 }
 
 type UpdateMessages = React.Dispatch<
 	React.SetStateAction<{
 		messages: (
 			| {
-					sid: string
-					message: MessageItemMessage
-			  }
+				sid: string
+				message: MessageItemMessage
+			}
 			| {
-					sid: string
-					status: Status
-			  }
+				sid: string
+				status: Status
+			}
 		)[]
 		lastIndex?: number | undefined
 	}>
@@ -34,11 +35,13 @@ export const SlashCommandHandler = ({
 	apollo,
 	updateMessages,
 	token,
+	onSwitchChannel,
 }: {
 	apollo: ApolloClient<NormalizedCacheObject>
 	updateMessages: UpdateMessages
+	onSwitchChannel: (channel: string) => void
 	token: string
-}) => (cmd: SlashCommand) => {
+}) => (cmd: SlashCommand, arg?: string) => {
 	switch (cmd) {
 		case SlashCommand.HELP:
 			updateMessages(prevMessages => ({
@@ -48,12 +51,18 @@ export const SlashCommandHandler = ({
 					{
 						sid: v4(),
 						status: {
-							message: '/me: show information about you',
+							message: [
+								'/me: show information about you',
+								'/join <channel>: join another channel',
+							].join('\n'),
 							timestamp: new Date(),
 						},
 					},
 				],
 			}))
+			break
+		case SlashCommand.JOIN:
+			onSwitchChannel(arg as string)
 			break
 		case SlashCommand.ME:
 			apollo

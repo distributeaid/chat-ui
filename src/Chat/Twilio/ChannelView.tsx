@@ -28,11 +28,13 @@ export const ChannelView = ({
 	identity,
 	apollo,
 	token,
+	onSwitchChannel,
 }: {
 	channel: Channel
 	identity: string
 	apollo: ApolloClient<NormalizedCacheObject>
 	token: string
+	onSwitchChannel: (channel: string) => void
 }) => {
 	const storageKey = `DAChat:minimized:${channel.uniqueName}`
 	const [isMinimized, minimize] = useState<boolean>(
@@ -61,14 +63,18 @@ export const ChannelView = ({
 		],
 	})
 
-	const onSlashCommand = SlashCommandHandler({ apollo, updateMessages, token })
+	const onSlashCommand = SlashCommandHandler({ apollo, updateMessages, token, onSwitchChannel })
 	const sendMessage = () => {
-		switch (message) {
+		const [cmd, ...arg] = message.split(' ')
+		switch (cmd) {
 			case '/me':
 				onSlashCommand(SlashCommand.ME)
 				break
 			case '/help':
 				onSlashCommand(SlashCommand.HELP)
+				break
+			case '/join':
+				onSlashCommand(SlashCommand.JOIN, arg[1])
 				break
 			default:
 				channel.sendMessage(message).catch(err => {
@@ -156,7 +162,7 @@ export const ChannelView = ({
 					setScrollTo('beginning')
 				} else if (
 					messageListRef.current.scrollTop +
-						messageListRef.current.clientHeight ===
+					messageListRef.current.clientHeight ===
 					messageListRef.current.scrollHeight
 				) {
 					setScrollTo('end')
@@ -228,25 +234,25 @@ export const ChannelView = ({
 								'status' in m ? (
 									<StatusItem key={m.sid} status={m.status} />
 								) : (
-									<MessageItem
-										key={m.sid}
-										message={m.message}
-										onRendered={() => {
-											// Scroll to the last item in the list
-											// if not at beginning
-											if (scrollTo !== 'end') return
-											if (scrollToTimeout) {
-												clearTimeout(scrollToTimeout)
-											}
-											scrollToTimeout = setTimeout(() => {
-												if (messageListRef.current) {
-													messageListRef.current.scrollTop =
-														messageListRef.current.scrollHeight
+										<MessageItem
+											key={m.sid}
+											message={m.message}
+											onRendered={() => {
+												// Scroll to the last item in the list
+												// if not at beginning
+												if (scrollTo !== 'end') return
+												if (scrollToTimeout) {
+													clearTimeout(scrollToTimeout)
 												}
-											}, 250)
-										}}
-									/>
-								),
+												scrollToTimeout = setTimeout(() => {
+													if (messageListRef.current) {
+														messageListRef.current.scrollTop =
+															messageListRef.current.scrollHeight
+													}
+												}, 250)
+											}}
+										/>
+									),
 							)}
 						</MessageList>
 					</MessageListContainer>

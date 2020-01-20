@@ -50,6 +50,7 @@
   "dependencies": {
     "@apollo/client": "^3.0.0-beta.20",
     "@types/styled-components": "^4.4.2",
+    "fp-ts": "^2.4.1",
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "react": "^16.12.0",
