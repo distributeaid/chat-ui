@@ -6,9 +6,12 @@ import {
 } from '../../graphql/createChatTokenMutation'
 import * as Twilio from 'twilio-chat'
 import { Channel } from 'twilio-chat/lib/channel'
-import { log } from '../../log'
-import { Either, left, right, isLeft } from 'fp-ts/lib/Either'
-import { tryCatch } from 'fp-ts/lib/TaskEither'
+import { Either } from 'fp-ts/lib/Either'
+import { tryCatch, chain } from 'fp-ts/lib/TaskEither'
+import * as TE from 'fp-ts/lib/TaskEither'
+import { pipe } from 'fp-ts/lib/pipeable'
+import { Option, fromNullable } from 'fp-ts/lib/Option'
+import { Paginator } from 'twilio-chat/lib/interfaces/paginator'
 
 type ErrorInfo = {
 	type: string
@@ -45,6 +48,49 @@ const createChatToken = ({
 		}),
 	)
 
+const createClient = (chatToken: string) =>
+	tryCatch<ErrorInfo, Twilio.Client>(
+		async () => Twilio.Client.create(chatToken),
+		reason => ({
+			type: 'IntegrationError',
+			message: `Creating chat client failed: ${(reason as Error).message}`,
+		}),
+	)
+
+const fetchSubscribedChannels = (client: Twilio.Client) =>
+	tryCatch<ErrorInfo, Paginator<Channel>>(
+		async () => client.getSubscribedChannels(),
+		reason => ({
+			type: 'IntegrationError',
+			message: `Failed to fetch subscribed channels: ${
+				(reason as Error).message
+			}`,
+		}),
+	)
+
+const joinChannel = ({
+	client,
+	channel,
+}: {
+	client: Twilio.Client
+	channel: string
+}) => () =>
+	tryCatch<ErrorInfo, Channel>(
+		async () =>
+			client.getChannelByUniqueName(channel).then(async c => c.join()),
+		reason => ({
+			type: 'IntegrationError',
+			message: `Failed to join channel "${channel}": ${
+				(reason as Error).message
+			}`,
+		}),
+	)
+
+const maybeAlreadyJoinedChannel = (context: string) => (
+	channels: Paginator<Channel>,
+): Option<Channel> =>
+	fromNullable(channels.items.find(({ uniqueName }) => uniqueName === context))
+
 export const connectToChannel = async ({
 	apollo,
 	context,
@@ -55,32 +101,17 @@ export const connectToChannel = async ({
 	deviceId: string
 	token: string
 	apollo: ApolloClient<NormalizedCacheObject>
-}): Promise<Either<
-	ErrorInfo,
-	{
-		channel: Channel
-	}
->> => {
-	const maybeToken = await createChatToken({ apollo, deviceId, token })()
-	if (isLeft(maybeToken)) return maybeToken
-	const chatToken = maybeToken.right
-	log({ chatToken })
-
-	const client = await Twilio.Client.create(chatToken)
-	if (!client) {
-		return left({
-			type: 'IntegrationError',
-			message: 'Creating chat client failed!',
-		})
-	}
-	const channels = await client.getSubscribedChannels()
-
-	let channel = channels.items.find(({ uniqueName }) => uniqueName === context)
-	if (!channel) {
-		channel = await client.getChannelByUniqueName(context)
-		await channel.join()
-	}
-	return right({
-		channel,
-	})
-}
+}): Promise<Either<ErrorInfo, Channel>> =>
+	pipe(
+		TE.right({ apollo, deviceId, token }),
+		chain(createChatToken),
+		chain(createClient),
+		chain(client =>
+			pipe(
+				fetchSubscribedChannels(client),
+				TE.map(maybeAlreadyJoinedChannel(context)),
+				TE.map(TE.fromOption<void>(() => undefined)),
+				chain(TE.orElse(joinChannel({ client, channel: context }))),
+			),
+		),
+	)()

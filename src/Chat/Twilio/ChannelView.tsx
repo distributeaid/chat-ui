@@ -3,6 +3,7 @@ import { useState, useEffect, useLayoutEffect } from 'react'
 import {
 	MessageItem,
 	Message as MessageItemMessage,
+	stringToColor,
 } from '../components/MessageItem'
 import { StatusItem, Status } from '../components/StatusItem'
 import { Channel } from 'twilio-chat/lib/channel'
@@ -21,22 +22,29 @@ import {
 	TextButton,
 	MessageInput,
 	SendButton,
+	OtherChannelHeader,
 } from '../components/ChannelView'
 
 export const ChannelView = ({
-	channel,
+	channelConnection,
 	identity,
 	apollo,
 	token,
 	onSwitchChannel,
+	joinedChannels,
+	selectedChannel,
+	onCloseChannel,
 }: {
-	channel: Channel
+	channelConnection?: Channel
 	identity: string
 	apollo: ApolloClient<NormalizedCacheObject>
 	token: string
+	selectedChannel: string
+	joinedChannels: string[]
 	onSwitchChannel: (channel: string) => void
+	onCloseChannel: (channel: string) => void
 }) => {
-	const storageKey = `DAChat:minimized:${channel.uniqueName}`
+	const storageKey = `DAChat:minimized`
 	const [isMinimized, minimize] = useState<boolean>(
 		window.localStorage.getItem(storageKey) === '1',
 	)
@@ -63,8 +71,13 @@ export const ChannelView = ({
 		],
 	})
 
-	const onSlashCommand = SlashCommandHandler({ apollo, updateMessages, token, onSwitchChannel })
-	const sendMessage = () => {
+	const onSlashCommand = SlashCommandHandler({
+		apollo,
+		updateMessages,
+		token,
+		onSwitchChannel,
+	})
+	const sendMessage = (channelConnection: Channel) => {
 		const [cmd, ...arg] = message.split(' ')
 		switch (cmd) {
 			case '/me':
@@ -74,13 +87,17 @@ export const ChannelView = ({
 				onSlashCommand(SlashCommand.HELP)
 				break
 			case '/join':
-				onSlashCommand(SlashCommand.JOIN, arg[1])
+				onSlashCommand(SlashCommand.JOIN, arg[0])
 				break
 			default:
-				channel.sendMessage(message).catch(err => {
-					console.error(err)
-					setMessage(message)
-				})
+				if (message.startsWith('/')) {
+					onSlashCommand(SlashCommand.HELP)
+				} else {
+					channelConnection.sendMessage(message).catch(err => {
+						console.error(err)
+						setMessage(message)
+					})
+				}
 		}
 		setMessage('')
 	}
@@ -138,16 +155,17 @@ export const ChannelView = ({
 	}
 
 	useEffect(() => {
-		channel.on('messageAdded', newMessageHandler)
-		channel.on('memberJoined', memberJoinedHandler)
-		channel.on('memberLeft', memberLeftHandler)
-
-		return () => {
-			channel.removeListener('messageAdded', newMessageHandler)
-			channel.removeListener('memberJoined', memberJoinedHandler)
-			channel.removeListener('memberLeft', memberLeftHandler)
+		if (channelConnection) {
+			channelConnection.on('messageAdded', newMessageHandler)
+			channelConnection.on('memberJoined', memberJoinedHandler)
+			channelConnection.on('memberLeft', memberLeftHandler)
+			return () => {
+				channelConnection.removeListener('messageAdded', newMessageHandler)
+				channelConnection.removeListener('memberJoined', memberJoinedHandler)
+				channelConnection.removeListener('memberLeft', memberLeftHandler)
+			}
 		}
-	}, [channel])
+	}, [channelConnection])
 
 	const messageListRef = React.createRef<HTMLDivElement>()
 	let scrollToTimeout: number
@@ -162,7 +180,7 @@ export const ChannelView = ({
 					setScrollTo('beginning')
 				} else if (
 					messageListRef.current.scrollTop +
-					messageListRef.current.clientHeight ===
+						messageListRef.current.clientHeight ===
 					messageListRef.current.scrollHeight
 				) {
 					setScrollTo('end')
@@ -173,7 +191,7 @@ export const ChannelView = ({
 		})
 	})
 
-	const loadOlderMessages = (scrollToBeginning = true) => {
+	const loadOlderMessages = (channel: Channel, scrollToBeginning = true) => {
 		if (scrollToBeginning) {
 			setScrollTo('beginning')
 		}
@@ -186,7 +204,7 @@ export const ChannelView = ({
 						...messages.items.map(toMessage),
 						...prevMessages.messages,
 					],
-					lastIndex: messages.items[0].index,
+					lastIndex: messages.items[0]?.index ?? undefined,
 				}))
 			})
 			.catch(err => {
@@ -195,14 +213,41 @@ export const ChannelView = ({
 	}
 
 	useEffect(() => {
-		loadOlderMessages(false)
-	}, [])
+		if (channelConnection) {
+			loadOlderMessages(channelConnection, false)
+		}
+	}, [channelConnection])
 
 	return (
 		<>
-			<Header>
+			{joinedChannels
+				.filter(c => c !== selectedChannel)
+				.map(otherChannel => (
+					<OtherChannelHeader
+						key={otherChannel}
+						onClick={() => {
+							onSwitchChannel(otherChannel)
+							memoMinimized(false)
+						}}
+						style={stringToColor(otherChannel)}
+					>
+						<Title>#{otherChannel}</Title>
+						<MinimizeButton
+							onClick={e => {
+								e.stopPropagation()
+								onCloseChannel(otherChannel)
+							}}
+						>
+							X
+						</MinimizeButton>
+					</OtherChannelHeader>
+				))}
+			<Header
+				style={stringToColor(selectedChannel)}
+				onClick={() => memoMinimized(!isMinimized)}
+			>
 				<Title>
-					Chat: <strong>#{channel.uniqueName}</strong>
+					Chat: <strong>#{selectedChannel}</strong>
 				</Title>
 				{!isMinimized && (
 					<MinimizeButton
@@ -227,32 +272,36 @@ export const ChannelView = ({
 				<>
 					<MessageListContainer>
 						<MessageList ref={messageListRef}>
-							<TextButton onClick={() => loadOlderMessages()}>
-								Load older messages
-							</TextButton>
+							{channelConnection && (
+								<TextButton
+									onClick={() => loadOlderMessages(channelConnection)}
+								>
+									Load older messages
+								</TextButton>
+							)}
 							{messages.messages.map(m =>
 								'status' in m ? (
 									<StatusItem key={m.sid} status={m.status} />
 								) : (
-										<MessageItem
-											key={m.sid}
-											message={m.message}
-											onRendered={() => {
-												// Scroll to the last item in the list
-												// if not at beginning
-												if (scrollTo !== 'end') return
-												if (scrollToTimeout) {
-													clearTimeout(scrollToTimeout)
+									<MessageItem
+										key={m.sid}
+										message={m.message}
+										onRendered={() => {
+											// Scroll to the last item in the list
+											// if not at beginning
+											if (scrollTo !== 'end') return
+											if (scrollToTimeout) {
+												clearTimeout(scrollToTimeout)
+											}
+											scrollToTimeout = setTimeout(() => {
+												if (messageListRef.current) {
+													messageListRef.current.scrollTop =
+														messageListRef.current.scrollHeight
 												}
-												scrollToTimeout = setTimeout(() => {
-													if (messageListRef.current) {
-														messageListRef.current.scrollTop =
-															messageListRef.current.scrollHeight
-													}
-												}, 250)
-											}}
-										/>
-									),
+											}, 250)
+										}}
+									/>
+								),
 							)}
 						</MessageList>
 					</MessageListContainer>
@@ -263,13 +312,19 @@ export const ChannelView = ({
 							onChange={({ target: { value } }) => {
 								setMessage(value)
 							}}
+							disabled={!channelConnection}
 							onKeyUp={({ keyCode }) => {
 								if (keyCode === 13 && message.length > 0) {
-									sendMessage()
+									channelConnection && sendMessage(channelConnection)
 								}
 							}}
 						/>
-						<SendButton disabled={!(message.length > 0)} onClick={sendMessage}>
+						<SendButton
+							disabled={!channelConnection || !(message.length > 0)}
+							onClick={() =>
+								channelConnection && sendMessage(channelConnection)
+							}
+						>
 							send
 						</SendButton>
 					</Footer>

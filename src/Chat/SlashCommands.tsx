@@ -19,13 +19,13 @@ type UpdateMessages = React.Dispatch<
 	React.SetStateAction<{
 		messages: (
 			| {
-				sid: string
-				message: MessageItemMessage
-			}
+					sid: string
+					message: MessageItemMessage
+			  }
 			| {
-				sid: string
-				status: Status
-			}
+					sid: string
+					status: Status
+			  }
 		)[]
 		lastIndex?: number | undefined
 	}>
@@ -51,10 +51,13 @@ export const SlashCommandHandler = ({
 					{
 						sid: v4(),
 						status: {
-							message: [
-								'/me: show information about you',
-								'/join <channel>: join another channel',
-							].join('\n'),
+							message: (
+								<p>
+									/me: show information about you
+									<br />
+									/join <code>&lt;channel&gt;</code>: join another channel
+								</p>
+							),
 							timestamp: new Date(),
 						},
 					},

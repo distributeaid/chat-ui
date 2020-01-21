@@ -115,6 +115,14 @@ const contrast = (hex: string) => {
 	}
 }
 
+export const stringToColor = (str: string) => {
+	const color = intToARGB(hashString(str))
+	return {
+		backgroundColor: `#${color}${contrast(color) ? 'FF' : '80'}`,
+		color: `${contrast(color) ? 'white' : 'black'}`,
+	}
+}
+
 export const MessageItem = ({
 	message: { from, message, timestamp, fromUser },
 	onRendered,
@@ -128,14 +136,8 @@ export const MessageItem = ({
 		onRendered()
 	})
 
-	const userColor = intToARGB(hashString(from))
 	return (
-		<V
-			style={{
-				backgroundColor: `#${userColor}${contrast(userColor) ? 'FF' : '80'}`,
-				color: `${contrast(userColor) ? 'white' : 'black'}`,
-			}}
-		>
+		<V style={stringToColor(from)}>
 			<From>{from}</From>
 			<Text>{message}</Text>
 			<Meta>

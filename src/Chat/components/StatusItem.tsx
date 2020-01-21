@@ -12,7 +12,7 @@ const Text = styled.div`
 `
 
 export type Status = {
-	message: string
+	message: string | React.ReactNode
 	timestamp: Date
 }
 

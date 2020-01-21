@@ -1,14 +1,17 @@
 import styled from 'styled-components'
 
 export const Header = styled.div`
-	background-color: #3543ec;
-	color: #ffffff;
 	display: flex;
 	justify-content: space-between;
 	font-weight: 300;
 	font-family: 'Inter', sans-serif;
 	align-items: center;
 	width: 100%;
+	height: 40px;
+`
+
+export const OtherChannelHeader = styled(Header)`
+	font-style: italic;
 `
 
 export const Title = styled.div`
@@ -64,7 +67,7 @@ export const MessageInput = styled.input`
 `
 
 export const MessageListContainer = styled.div`
-	width: 100%;
+	width: 350px;
 	background-color: #fff;
 `
 
