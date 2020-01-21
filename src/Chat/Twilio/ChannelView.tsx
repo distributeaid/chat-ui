@@ -165,6 +165,9 @@ export const ChannelView = ({
 				channelConnection.removeListener('memberLeft', memberLeftHandler)
 			}
 		}
+		return () => {
+			// pass
+		}
 	}, [channelConnection])
 
 	const messageListRef = React.createRef<HTMLDivElement>()
