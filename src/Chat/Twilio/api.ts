@@ -12,6 +12,7 @@ import * as TE from 'fp-ts/lib/TaskEither'
 import { pipe } from 'fp-ts/lib/pipeable'
 import { Option, fromNullable } from 'fp-ts/lib/Option'
 import { Paginator } from 'twilio-chat/lib/interfaces/paginator'
+import { getOrElse } from '../../fp-ts.util'
 
 type ErrorInfo = {
 	type: string
@@ -110,8 +111,7 @@ export const connectToChannel = async ({
 			pipe(
 				fetchSubscribedChannels(client),
 				TE.map(maybeAlreadyJoinedChannel(context)),
-				TE.map(TE.fromOption<void>(() => undefined)),
-				chain(TE.orElse(joinChannel({ client, channel: context }))),
+				getOrElse(joinChannel({ client, channel: context })),
 			),
 		),
 	)()
