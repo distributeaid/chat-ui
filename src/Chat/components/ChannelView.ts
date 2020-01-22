@@ -50,11 +50,13 @@ export const MinimizeButton = styled(Button)`
 	${Header} & {
 		color: inherit;
 	}
+	cursor: pointer;
 `
 
 export const SendButton = styled(Button)`
 	background-color: #fff;
 	margin-left: 0.5rem;
+	cursor: pointer;
 `
 
 export const MessageInput = styled.input`

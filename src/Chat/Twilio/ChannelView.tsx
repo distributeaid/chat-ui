@@ -194,6 +194,7 @@ export const ChannelView = ({
 		})
 	})
 
+	const [initialLoad, setInitialLoad] = useState<boolean>(true)
 	const loadOlderMessages = (channel: Channel, scrollToBeginning = true) => {
 		if (scrollToBeginning) {
 			setScrollTo('beginning')
@@ -201,6 +202,7 @@ export const ChannelView = ({
 		channel
 			.getMessages(10, messages.lastIndex && messages.lastIndex - 1)
 			.then(messages => {
+				setInitialLoad(false)
 				updateMessages(prevMessages => ({
 					...prevMessages,
 					messages: [
@@ -212,6 +214,7 @@ export const ChannelView = ({
 			})
 			.catch(err => {
 				console.error(err)
+				setInitialLoad(false)
 			})
 	}
 
@@ -252,24 +255,39 @@ export const ChannelView = ({
 				<Title>
 					Chat: <strong>#{selectedChannel}</strong>
 				</Title>
-				{!isMinimized && (
-					<MinimizeButton
-						onClick={() => {
-							memoMinimized(true)
-						}}
-					>
-						_
-					</MinimizeButton>
-				)}
-				{isMinimized && (
-					<MinimizeButton
-						onClick={() => {
-							memoMinimized(false)
-						}}
-					>
-						+
-					</MinimizeButton>
-				)}
+				<span>
+					{joinedChannels.length > 1 && (
+						<MinimizeButton
+							onClick={e => {
+								e.stopPropagation()
+								onSwitchChannel(
+									joinedChannels.find(c => c !== selectedChannel) as string,
+								)
+								onCloseChannel(selectedChannel)
+							}}
+						>
+							X
+						</MinimizeButton>
+					)}
+					{!isMinimized && (
+						<MinimizeButton
+							onClick={() => {
+								memoMinimized(true)
+							}}
+						>
+							_
+						</MinimizeButton>
+					)}
+					{isMinimized && (
+						<MinimizeButton
+							onClick={() => {
+								memoMinimized(false)
+							}}
+						>
+							+
+						</MinimizeButton>
+					)}
+				</span>
 			</Header>
 			{!isMinimized && (
 				<>
@@ -281,6 +299,14 @@ export const ChannelView = ({
 								>
 									Load older messages
 								</TextButton>
+							)}
+							{initialLoad && (
+								<StatusItem
+									status={{
+										message: 'Loading messages...',
+										timestamp: new Date(),
+									}}
+								/>
 							)}
 							{messages.messages.map(m =>
 								'status' in m ? (
