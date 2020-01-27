@@ -78,7 +78,7 @@ export const ChannelView = ({
 		onSwitchChannel,
 	})
 	const sendMessage = (channelConnection: Channel) => {
-		const [cmd, ...arg] = message.split(' ')
+		const [cmd, ...args] = message.split(' ')
 		switch (cmd) {
 			case '/me':
 				onSlashCommand(SlashCommand.ME)
@@ -87,7 +87,10 @@ export const ChannelView = ({
 				onSlashCommand(SlashCommand.HELP)
 				break
 			case '/join':
-				onSlashCommand(SlashCommand.JOIN, arg[0])
+				onSlashCommand(SlashCommand.JOIN, args[0])
+				break
+			case '/nick':
+				onSlashCommand(SlashCommand.NICK, args.join(' '))
 				break
 			default:
 				if (message.startsWith('/')) {

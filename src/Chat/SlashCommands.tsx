@@ -8,11 +8,17 @@ import {
 	VerifyTokenQueryResult,
 	VerifyTokenVariables,
 } from '../graphql/verifyTokenQuery'
+import {
+	updateNickMutation,
+	UpdateNickMutationResult,
+	UpdateNickVariables,
+} from '../graphql/updateNickMutation'
 
 export enum SlashCommand {
 	HELP = 'help',
 	ME = 'me',
 	JOIN = 'join',
+	NICK = 'nick',
 }
 
 type UpdateMessages = React.Dispatch<
@@ -56,6 +62,8 @@ export const SlashCommandHandler = ({
 									/me: show information about you
 									<br />
 									/join <code>&lt;channel&gt;</code>: join another channel
+									<br />
+									/nick <code>&lt;nickname&gt;</code>: set your nickname
 								</p>
 							),
 							timestamp: new Date(),
@@ -66,6 +74,16 @@ export const SlashCommandHandler = ({
 			break
 		case SlashCommand.JOIN:
 			onSwitchChannel(arg as string)
+			break
+		case SlashCommand.NICK:
+			apollo
+				.mutate<UpdateNickMutationResult, UpdateNickVariables>({
+					mutation: updateNickMutation,
+					variables: { token, nick: arg as string },
+				})
+				.catch(err => {
+					console.error(err)
+				})
 			break
 		case SlashCommand.ME:
 			apollo
