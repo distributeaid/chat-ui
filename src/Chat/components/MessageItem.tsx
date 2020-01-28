@@ -2,6 +2,7 @@ import * as React from 'react'
 import { useLayoutEffect } from 'react'
 import styled from 'styled-components'
 import { Timestamp } from './Timestamp'
+import { emojify } from './Emojify'
 
 const MessageView = styled.div`
 	border-radius: 10px;
@@ -25,9 +26,9 @@ const Meta = styled.div`
 	align-items: center;
 	font-size: 80%;
 	font-weight: 300;
-	margin: 0 0.5rem 0.5rem 0.5rem;
+	margin: 0.5rem;
 	padding-bottom: 0.5rem;
-	opacity: 0.85;
+	opacity: 0.6;
 `
 
 const From = styled.div`
@@ -140,8 +141,8 @@ export const MessageItem = ({
 
 	return (
 		<V style={stringToColor(from)}>
-			<From>{nick || from}</From>
-			<Text>{message}</Text>
+			<From>{emojify(nick || from)}</From>
+			<Text>{emojify(message)}</Text>
 			<Meta>
 				<Timestamp from={timestamp} />
 			</Meta>

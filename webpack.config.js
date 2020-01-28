@@ -27,6 +27,7 @@ const cfg = {
 		react: 'React',
 		'react-dom': 'ReactDOM',
 		'twilio-chat': ['Twilio', 'Chat'],
+		twemoji: 'twemoji',
 	},
 }
 
