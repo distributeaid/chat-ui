@@ -8,11 +8,6 @@ import {
 	VerifyTokenQueryResult,
 	VerifyTokenVariables,
 } from '../graphql/verifyTokenQuery'
-import {
-	updateNickMutation,
-	UpdateNickMutationResult,
-	UpdateNickVariables,
-} from '../graphql/updateNickMutation'
 
 export enum SlashCommand {
 	HELP = 'help',
@@ -42,10 +37,12 @@ export const SlashCommandHandler = ({
 	updateMessages,
 	token,
 	onSwitchChannel,
+	onChangeNick,
 }: {
 	apollo: ApolloClient<NormalizedCacheObject>
 	updateMessages: UpdateMessages
 	onSwitchChannel: (channel: string) => void
+	onChangeNick: (nick: string) => void
 	token: string
 }) => (cmd: SlashCommand, arg?: string) => {
 	switch (cmd) {
@@ -76,14 +73,7 @@ export const SlashCommandHandler = ({
 			onSwitchChannel(arg as string)
 			break
 		case SlashCommand.NICK:
-			apollo
-				.mutate<UpdateNickMutationResult, UpdateNickVariables>({
-					mutation: updateNickMutation,
-					variables: { token, nick: arg as string },
-				})
-				.catch(err => {
-					console.error(err)
-				})
+			onChangeNick(arg as string)
 			break
 		case SlashCommand.ME:
 			apollo

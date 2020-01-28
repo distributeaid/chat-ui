@@ -7,6 +7,7 @@ import {
 } from '../components/MessageItem'
 import { StatusItem, Status } from '../components/StatusItem'
 import { Channel } from 'twilio-chat/lib/channel'
+import { Client, User } from 'twilio-chat'
 import { Message } from 'twilio-chat/lib/message'
 import { Member } from 'twilio-chat/lib/member'
 import { v4 } from 'uuid'
@@ -24,6 +25,10 @@ import {
 	SendButton,
 	OtherChannelHeader,
 } from '../components/ChannelView'
+import { UserDescriptor } from 'twilio-chat/lib/userdescriptor'
+
+type AuthorMap = { [key: string]: User }
+type AuthorNicks = { [key: string]: string | undefined }
 
 export const ChannelView = ({
 	channelConnection,
@@ -34,14 +39,16 @@ export const ChannelView = ({
 	joinedChannels,
 	selectedChannel,
 	onCloseChannel,
+	onChangeNick,
 }: {
-	channelConnection?: Channel
+	channelConnection?: { channel: Channel; client: Client }
 	identity: string
 	apollo: ApolloClient<NormalizedCacheObject>
 	token: string
 	selectedChannel: string
 	joinedChannels: string[]
 	onSwitchChannel: (channel: string) => void
+	onChangeNick: (nick: string) => void
 	onCloseChannel: (channel: string) => void
 }) => {
 	const storageKey = `DAChat:minimized`
@@ -71,11 +78,22 @@ export const ChannelView = ({
 		],
 	})
 
+	const [authorSubscriptions, setAuthorSubscriptions] = useState<AuthorMap>({})
+	const [authorNicks, setAuthorNicks] = useState<AuthorNicks>({})
+	useEffect(() => {
+		;() => {
+			Object.values(authorSubscriptions).map(async author =>
+				author.unsubscribe(),
+			)
+		}
+	})
+
 	const onSlashCommand = SlashCommandHandler({
 		apollo,
 		updateMessages,
 		token,
 		onSwitchChannel,
+		onChangeNick,
 	})
 	const sendMessage = (channelConnection: Channel) => {
 		const [cmd, ...args] = message.split(' ')
@@ -157,15 +175,54 @@ export const ChannelView = ({
 		}))
 	}
 
+	const userChangedNickHandler = ({
+		updateReasons,
+		user,
+	}: User.UpdatedEventArgs) => {
+		if (updateReasons.includes('friendlyName')) {
+			updateMessages(prevMessages => ({
+				...prevMessages,
+				messages: [
+					...prevMessages.messages,
+					{
+						sid: v4(),
+						status: {
+							message: (
+								<>
+									User <em>{authorNicks[user.identity] || user.identity}</em>{' '}
+									changed their name to <em>{user.friendlyName}</em>.
+								</>
+							),
+							timestamp: new Date(),
+						},
+					},
+				],
+			}))
+			setAuthorNicks(authorNicks => ({
+				...authorNicks,
+				[user.identity]: user.friendlyName,
+			}))
+		}
+	}
+
 	useEffect(() => {
 		if (channelConnection) {
-			channelConnection.on('messageAdded', newMessageHandler)
-			channelConnection.on('memberJoined', memberJoinedHandler)
-			channelConnection.on('memberLeft', memberLeftHandler)
+			channelConnection.channel.on('messageAdded', newMessageHandler)
+			channelConnection.channel.on('memberJoined', memberJoinedHandler)
+			channelConnection.channel.on('memberLeft', memberLeftHandler)
 			return () => {
-				channelConnection.removeListener('messageAdded', newMessageHandler)
-				channelConnection.removeListener('memberJoined', memberJoinedHandler)
-				channelConnection.removeListener('memberLeft', memberLeftHandler)
+				channelConnection.channel.removeListener(
+					'messageAdded',
+					newMessageHandler,
+				)
+				channelConnection.channel.removeListener(
+					'memberJoined',
+					memberJoinedHandler,
+				)
+				channelConnection.channel.removeListener(
+					'memberLeft',
+					memberLeftHandler,
+				)
 			}
 		}
 		return () => {
@@ -204,7 +261,7 @@ export const ChannelView = ({
 		}
 		channel
 			.getMessages(10, messages.lastIndex && messages.lastIndex - 1)
-			.then(messages => {
+			.then(async messages => {
 				setInitialLoad(false)
 				updateMessages(prevMessages => ({
 					...prevMessages,
@@ -214,6 +271,39 @@ export const ChannelView = ({
 					],
 					lastIndex: messages.items[0]?.index ?? undefined,
 				}))
+				return Promise.all(
+					[...new Set(messages.items.map(message => message.author))]
+						.filter(
+							identity => !Object.keys(authorSubscriptions).includes(identity),
+						)
+						.map(async author =>
+							channelConnection?.client.getUserDescriptor(author),
+						),
+				)
+			})
+			.then(async newAuthorDescriptors =>
+				Promise.all(
+					(newAuthorDescriptors.filter(
+						f => f,
+					) as UserDescriptor[]).map(async a => a.subscribe()),
+				),
+			)
+			.then(async newAuthorSubscriptions => {
+				const subs = newAuthorSubscriptions.reduce((authors, user) => {
+					user.on('updated', userChangedNickHandler)
+					return {
+						...authors,
+						[user.identity]: user,
+					}
+				}, {} as AuthorMap)
+				setAuthorSubscriptions(subs)
+				setAuthorNicks({
+					...authorNicks,
+					...Object.values(subs).reduce(
+						(nicks, user) => ({ ...nicks, [user.identity]: user.friendlyName }),
+						{},
+					),
+				})
 			})
 			.catch(err => {
 				console.error(err)
@@ -223,7 +313,7 @@ export const ChannelView = ({
 
 	useEffect(() => {
 		if (channelConnection) {
-			loadOlderMessages(channelConnection, false)
+			loadOlderMessages(channelConnection.channel, false)
 		}
 	}, [channelConnection])
 
@@ -298,7 +388,7 @@ export const ChannelView = ({
 						<MessageList ref={messageListRef}>
 							{channelConnection && (
 								<TextButton
-									onClick={() => loadOlderMessages(channelConnection)}
+									onClick={() => loadOlderMessages(channelConnection.channel)}
 								>
 									Load older messages
 								</TextButton>
@@ -317,7 +407,11 @@ export const ChannelView = ({
 								) : (
 									<MessageItem
 										key={m.sid}
-										message={m.message}
+										message={{
+											...m.message,
+											from: m.message.from,
+										}}
+										nick={authorNicks[m.message.from]}
 										onRendered={() => {
 											// Scroll to the last item in the list
 											// if not at beginning
@@ -347,14 +441,14 @@ export const ChannelView = ({
 							disabled={!channelConnection}
 							onKeyUp={({ keyCode }) => {
 								if (keyCode === 13 && message.length > 0) {
-									channelConnection && sendMessage(channelConnection)
+									channelConnection && sendMessage(channelConnection.channel)
 								}
 							}}
 						/>
 						<SendButton
 							disabled={!channelConnection || !(message.length > 0)}
 							onClick={() =>
-								channelConnection && sendMessage(channelConnection)
+								channelConnection && sendMessage(channelConnection.channel)
 							}
 						>
 							send

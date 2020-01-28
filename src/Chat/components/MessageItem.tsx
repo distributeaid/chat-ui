@@ -125,9 +125,11 @@ export const stringToColor = (str: string) => {
 
 export const MessageItem = ({
 	message: { from, message, timestamp, fromUser },
+	nick,
 	onRendered,
 }: {
 	message: Message
+	nick?: string
 	onRendered: () => void
 }) => {
 	const V = fromUser ? UserMessageView : MessageView
@@ -138,7 +140,7 @@ export const MessageItem = ({
 
 	return (
 		<V style={stringToColor(from)}>
-			<From>{from}</From>
+			<From>{nick || from}</From>
 			<Text>{message}</Text>
 			<Meta>
 				<Timestamp from={timestamp} />

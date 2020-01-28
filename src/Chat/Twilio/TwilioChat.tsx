@@ -4,6 +4,7 @@ import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { Error } from '../components/Error'
 import { ChannelView } from './ChannelView'
 import { Channel } from 'twilio-chat/lib/channel'
+import { Client } from 'twilio-chat'
 import { ChatWidget } from '../components/ChatWidget'
 import { connectToChannel } from './api'
 import { isLeft } from 'fp-ts/lib/Either'
@@ -23,7 +24,7 @@ export const TwilioChat = ({
 	const [error, setError] = useState<{ type: string; message: string }>()
 	const [selectedChannel, setSelectedChannel] = useState<string>(context)
 	const [channelConnection, setConnectedChannel] = useState<
-		Channel | undefined
+		{ channel: Channel; client: Client } | undefined
 	>()
 	const [joinedChannels, setJoinedChannels] = useState<string[]>([
 		...new Set(['general', 'random', context]),
@@ -74,6 +75,22 @@ export const TwilioChat = ({
 							message: error.message,
 						})
 					})
+				}}
+				onChangeNick={nick => {
+					console.log(`Changing nick ...`, nick)
+					if (channelConnection) {
+						channelConnection.client.user
+							.updateFriendlyName(nick)
+							.then(() => {
+								console.log(`Updated nick to ${nick}.`)
+							})
+							.catch(error => {
+								setError({
+									type: 'InternalError',
+									message: error.message,
+								})
+							})
+					}
 				}}
 				onCloseChannel={channel => {
 					setJoinedChannels(joinedChannels.filter(c => c !== channel))

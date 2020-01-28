@@ -4,7 +4,7 @@ import {
 	ChatTokenMutationResult,
 	ChatTokenVariables,
 } from '../../graphql/createChatTokenMutation'
-import * as Twilio from 'twilio-chat'
+import { Client } from 'twilio-chat'
 import { Channel } from 'twilio-chat/lib/channel'
 import { Either } from 'fp-ts/lib/Either'
 import { tryCatch, chain } from 'fp-ts/lib/TaskEither'
@@ -50,15 +50,15 @@ const createChatToken = ({
 	)
 
 const createClient = (chatToken: string) =>
-	tryCatch<ErrorInfo, Twilio.Client>(
-		async () => Twilio.Client.create(chatToken),
+	tryCatch<ErrorInfo, Client>(
+		async () => Client.create(chatToken),
 		reason => ({
 			type: 'IntegrationError',
 			message: `Creating chat client failed: ${(reason as Error).message}`,
 		}),
 	)
 
-const fetchSubscribedChannels = (client: Twilio.Client) =>
+const fetchSubscribedChannels = (client: Client) =>
 	tryCatch<ErrorInfo, Paginator<Channel>>(
 		async () => client.getSubscribedChannels(),
 		reason => ({
@@ -73,7 +73,7 @@ const joinChannel = ({
 	client,
 	channel,
 }: {
-	client: Twilio.Client
+	client: Client
 	channel: string
 }) => () =>
 	tryCatch<ErrorInfo, Channel>(
@@ -92,6 +92,21 @@ const maybeAlreadyJoinedChannel = (context: string) => (
 ): Option<Channel> =>
 	fromNullable(channels.items.find(({ uniqueName }) => uniqueName === context))
 
+export const authenticateClient = ({
+	apollo,
+	deviceId,
+	token,
+}: {
+	deviceId: string
+	token: string
+	apollo: ApolloClient<NormalizedCacheObject>
+}) =>
+	pipe(
+		TE.right({ apollo, deviceId, token }),
+		chain(createChatToken),
+		chain(createClient),
+	)
+
 export const connectToChannel = async ({
 	apollo,
 	context,
@@ -102,16 +117,16 @@ export const connectToChannel = async ({
 	deviceId: string
 	token: string
 	apollo: ApolloClient<NormalizedCacheObject>
-}): Promise<Either<ErrorInfo, Channel>> =>
+}): Promise<Either<ErrorInfo, { client: Client; channel: Channel }>> =>
 	pipe(
 		TE.right({ apollo, deviceId, token }),
-		chain(createChatToken),
-		chain(createClient),
+		chain(authenticateClient),
 		chain(client =>
 			pipe(
 				fetchSubscribedChannels(client),
 				TE.map(maybeAlreadyJoinedChannel(context)),
 				getOrElse(joinChannel({ client, channel: context })),
+				TE.map(channel => ({ client, channel })),
 			),
 		),
 	)()
