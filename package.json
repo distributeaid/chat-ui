@@ -29,7 +29,7 @@
     "@types/react-dom": "^16.9.5",
     "@types/styled-components": "^4.4.2",
     "@types/twemoji": "^12.1.0",
-    "@types/uuid": "^3.4.6",
+    "@types/uuid": "^3.4.7",
     "handlebars": "^4.7.2",
     "husky": "^4.2.1",
     "source-map-loader": "^0.2.4",
@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.0.0-beta.20",
-    "fp-ts": "^2.4.2",
+    "fp-ts": "^2.4.3",
     "graphql": "^14.6.0",
     "graphql-tag": "^2.10.1",
     "react": "^16.12.0",
