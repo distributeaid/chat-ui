@@ -7,11 +7,11 @@ import { emojify } from './Emojify'
 const MessageView = styled.div`
 	border-radius: 10px;
 	background-color: #dbedff;
-	margin: 1rem 4rem 1rem 1rem;
+	margin: 0.5rem 0.5rem 0.5rem 4rem;
 `
 
 const UserMessageView = styled(MessageView)`
-	margin: 1rem 1rem 1rem 4rem;
+	margin: 0.5rem 4rem 0.5rem 0.5rem;
 	background-color: #dbfff7;
 `
 

@@ -108,6 +108,10 @@ export const ChannelView = ({
 				onSlashCommand(SlashCommand.JOIN, args[0])
 				break
 			case '/nick':
+				setAuthorNicks(previous => ({
+					...previous,
+					[identity]: args.join(' '),
+				}))
 				onSlashCommand(SlashCommand.NICK, args.join(' '))
 				break
 			default:
@@ -133,6 +137,36 @@ export const ChannelView = ({
 		},
 	})
 
+	const userChangedNickHandler = ({
+		updateReasons,
+		user,
+	}: User.UpdatedEventArgs) => {
+		if (updateReasons.includes('friendlyName')) {
+			updateMessages(prevMessages => ({
+				...prevMessages,
+				messages: [
+					...prevMessages.messages,
+					{
+						sid: v4(),
+						status: {
+							message: (
+								<>
+									User <em>{authorNicks[user.identity] || user.identity}</em>{' '}
+									changed their name to <em>{user.friendlyName}</em>.
+								</>
+							),
+							timestamp: new Date(),
+						},
+					},
+				],
+			}))
+			setAuthorNicks(authorNicks => ({
+				...authorNicks,
+				[user.identity]: user.friendlyName,
+			}))
+		}
+	}
+
 	const newMessageHandler = (message: Message) => {
 		updateMessages(prevMessages => ({
 			...prevMessages,
@@ -141,6 +175,25 @@ export const ChannelView = ({
 				? prevMessages.lastIndex
 				: message.index,
 		}))
+		if (!authorNicks[message.author]) {
+			channelConnection?.client
+				.getUserDescriptor(message.author)
+				.then(async d => {
+					const user = await d.subscribe()
+					user.on('updated', userChangedNickHandler)
+					setAuthorNicks(previous => ({
+						...previous,
+						[message.author]: d.friendlyName,
+					}))
+					setAuthorSubscriptions(previous => ({
+						...previous,
+						[message.author]: user,
+					}))
+				})
+				.catch(err => {
+					console.error(err)
+				})
+		}
 	}
 
 	const memberJoinedHandler = (member: Member) => {
@@ -173,36 +226,6 @@ export const ChannelView = ({
 				},
 			],
 		}))
-	}
-
-	const userChangedNickHandler = ({
-		updateReasons,
-		user,
-	}: User.UpdatedEventArgs) => {
-		if (updateReasons.includes('friendlyName')) {
-			updateMessages(prevMessages => ({
-				...prevMessages,
-				messages: [
-					...prevMessages.messages,
-					{
-						sid: v4(),
-						status: {
-							message: (
-								<>
-									User <em>{authorNicks[user.identity] || user.identity}</em>{' '}
-									changed their name to <em>{user.friendlyName}</em>.
-								</>
-							),
-							timestamp: new Date(),
-						},
-					},
-				],
-			}))
-			setAuthorNicks(authorNicks => ({
-				...authorNicks,
-				[user.identity]: user.friendlyName,
-			}))
-		}
 	}
 
 	useEffect(() => {
