@@ -63,6 +63,7 @@
     "react": "^16.12.0",
     "react-apollo": "^3.1.3",
     "react-dom": "^16.12.0",
+    "react-feather": "^2.0.3",
     "styled-components": "^5.0.0",
     "uuid": "^3.4.0"
   },
@@ -80,6 +81,11 @@
               "path": "/home/runner/work/chat-ui/chat-ui/dist/main.js",
               "name": "distribute-aid-chat-ui.${nextRelease.gitTag}.js",
               "label": "Chat UI Bundle"
+            },
+            {
+              "path": "/home/runner/work/chat-ui/chat-ui/dist/chatbutton.js",
+              "name": "distribute-aid-chat-button.${nextRelease.gitTag}.js",
+              "label": "Chat Button"
             }
           ]
         }

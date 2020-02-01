@@ -5,6 +5,7 @@ const Handlebars = require('handlebars')
 const cfg = {
 	entry: {
 		main: './src/index.tsx',
+		chatbutton: './src/chatbutton.ts',
 		demo: './src/demo.tsx',
 	},
 	resolve: {
@@ -30,9 +31,6 @@ const cfg = {
 		twemoji: 'twemoji',
 	},
 }
-
-const replaceEnv = html =>
-	Object.entries(process.env).reduce((html, [k, v]) => html.replace(``), html)
 
 module.exports = [
 	{
