@@ -44,12 +44,15 @@ export const Button = styled.button`
 	margin: 0.5rem;
 `
 
-export const MinimizeButton = styled(Button)`
+export const MinimizeButton = styled.button`
 	width: 30px;
-	border-color: #fff;
+	height: 30px;
+	border: 0;
+	padding: 0;
 	${Header} & {
 		color: inherit;
 	}
+	background-color: transparent;
 	cursor: pointer;
 `
 
