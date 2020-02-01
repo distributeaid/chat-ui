@@ -26,7 +26,6 @@ import {
 	OtherChannelHeader,
 } from '../components/ChannelView'
 import { UserDescriptor } from 'twilio-chat/lib/userdescriptor'
-import { XSquare, Maximize2, Minimize2 } from 'react-feather'
 
 type AuthorMap = { [key: string]: User }
 type AuthorNicks = { [key: string]: string | undefined }
@@ -361,7 +360,7 @@ export const ChannelView = ({
 								onCloseChannel(otherChannel)
 							}}
 						>
-							<XSquare />
+							X
 						</MinimizeButton>
 					</OtherChannelHeader>
 				))}
@@ -373,24 +372,6 @@ export const ChannelView = ({
 					Chat: <strong>#{selectedChannel}</strong>
 				</Title>
 				<span>
-					{!isMinimized && (
-						<MinimizeButton
-							onClick={() => {
-								memoMinimized(true)
-							}}
-						>
-							<Minimize2 />
-						</MinimizeButton>
-					)}
-					{isMinimized && (
-						<MinimizeButton
-							onClick={() => {
-								memoMinimized(false)
-							}}
-						>
-							<Maximize2 />
-						</MinimizeButton>
-					)}
 					{joinedChannels.length > 1 && (
 						<MinimizeButton
 							onClick={e => {
@@ -401,7 +382,25 @@ export const ChannelView = ({
 								onCloseChannel(selectedChannel)
 							}}
 						>
-							<XSquare />
+							X
+						</MinimizeButton>
+					)}
+					{!isMinimized && (
+						<MinimizeButton
+							onClick={() => {
+								memoMinimized(true)
+							}}
+						>
+							_
+						</MinimizeButton>
+					)}
+					{isMinimized && (
+						<MinimizeButton
+							onClick={() => {
+								memoMinimized(false)
+							}}
+						>
+							+
 						</MinimizeButton>
 					)}
 				</span>
