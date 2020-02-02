@@ -32,6 +32,9 @@ const Meta = styled.div`
 	margin: 0.5rem;
 	padding-bottom: 0.5rem;
 	opacity: 0.6;
+	time + ${UIButton} {
+		margin-left: 0.5rem;
+	}
 `
 
 const From = styled.div`
