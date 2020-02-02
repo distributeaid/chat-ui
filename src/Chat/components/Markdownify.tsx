@@ -24,6 +24,9 @@ const FromMarkdown = styled(WithTwemoji)`
 		border-radius: 4px;
 		font-weight: bold;
 		text-shadow: 1px 1px 2px #000000dd;
+		background-color: transparent;
+		font-size: 85%;
+		line-height: 1;
 	}
 	img {
 		max-width: 100%;
