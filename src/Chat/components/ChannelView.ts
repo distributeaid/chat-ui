@@ -35,11 +35,25 @@ export const TextButton = styled.button`
 	text-align: center;
 	cursor: pointer;
 `
-
-export const Controls = styled.span`
-	padding: 1rem;
+export const UIButton = styled.button`
+	border: 0;
+	background-color: transparent;
+	height: 24px;
+	width: 24px;
+	color: inherit;
+	cursor: pointer;
+	padding: 0;
+	margin: 0;
 `
-
+export const Controls = styled.div`
+	padding: 0;
+	margin: 0;
+    display: flex;
+	margin-right: 1rem;
+	${UIButton} + ${UIButton} {
+		margin-left: 0.5rem;
+	}
+`
 export const Button = styled.button`
 	font-family: 'Inter', sans-serif;
 	background-color: transparent;
@@ -47,16 +61,6 @@ export const Button = styled.button`
 	height: 30px;
 	margin: 0.5rem;
 `
-
-export const UIButton = styled.button`
-	border: 0;
-	background-color: transparent;
-	height: 30px;
-	width: 30px;
-	color: inherit;
-	cursor: pointer;
-`
-
 export const SendButton = styled.button`
 	border: 0;
 	background-color: transparent;
