@@ -6,6 +6,7 @@ import { ChannelView } from './ChannelView'
 import { Channel } from 'twilio-chat/lib/channel'
 import { Client } from 'twilio-chat'
 import { ChatWidget } from '../components/ChatWidget'
+import { Notice } from '../components/Notice'
 import { connectToChannel } from './api'
 import { isLeft } from 'fp-ts/lib/Either'
 
@@ -59,6 +60,18 @@ export const TwilioChat = ({
 
 	return (
 		<ChatWidget>
+			<Notice>
+				<strong>Preview!</strong> This is a development preview of the chat.
+				Please report all issues in{' '}
+				<a
+					href={'https://gitlab.com/distribute-aid/toolbox/issues/95'}
+					target={'_blank'}
+					rel={'noopener noreferrer'}
+				>
+					this GitLab issue
+				</a>
+				.
+			</Notice>
 			<ChannelView
 				key={selectedChannel}
 				channelConnection={channelConnection}

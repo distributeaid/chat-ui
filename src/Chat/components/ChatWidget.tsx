@@ -7,4 +7,5 @@ export const ChatWidget = styled.div`
 	bottom: 1rem;
 	font-family: 'Inter', sans-serif;
 	max-width: 350px;
+	font-size: 16px;
 `
