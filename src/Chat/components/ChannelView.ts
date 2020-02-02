@@ -36,6 +36,10 @@ export const TextButton = styled.button`
 	cursor: pointer;
 `
 
+export const Controls = styled.span`
+	padding: 1rem;
+`
+
 export const Button = styled.button`
 	font-family: 'Inter', sans-serif;
 	background-color: transparent;
@@ -44,19 +48,29 @@ export const Button = styled.button`
 	margin: 0.5rem;
 `
 
-export const MinimizeButton = styled(Button)`
+export const UIButton = styled.button`
+	border: 0;
+	background-color: transparent;
+	height: 30px;
 	width: 30px;
-	border-color: #fff;
 	${Header} & {
 		color: inherit;
 	}
 	cursor: pointer;
 `
 
-export const SendButton = styled(Button)`
-	background-color: #fff;
+export const SendButton = styled.button`
+	border: 0;
+	background-color: transparent;
+	height: 30px;
+	width: 30px;
 	margin-left: 0.5rem;
+	margin-right: 1rem;
 	cursor: pointer;
+	color: #5eb114;
+	&:disabled {
+		color: #989898;
+	}
 `
 
 export const MessageInput = styled.input`
@@ -66,7 +80,12 @@ export const MessageInput = styled.input`
 	border: 1px solid;
 	height: 28px;
 	padding: 0 0.5rem;
-	margin-left: 0.5rem;
+	margin-left: 1rem;
+	&:disabled {
+		color: #989898;
+		background-color: #d0d0d0;
+		border-color: #bfbfbf;
+	}
 `
 
 export const MessageListContainer = styled.div`

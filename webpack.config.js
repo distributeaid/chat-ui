@@ -22,6 +22,10 @@ const cfg = {
 					},
 				],
 			},
+			{
+				test: /\.svg$/,
+				use: ['@svgr/webpack'],
+			},
 		],
 	},
 	externals: {

@@ -17,15 +17,21 @@ import {
 	Header,
 	Title,
 	Footer,
-	MinimizeButton,
+	UIButton,
 	MessageListContainer,
 	MessageList,
 	TextButton,
 	MessageInput,
 	SendButton,
 	OtherChannelHeader,
+	Controls,
 } from '../components/ChannelView'
 import { UserDescriptor } from 'twilio-chat/lib/userdescriptor'
+
+import CloseIcon from 'feather-icons/dist/icons/x-square.svg'
+import MinimizeIcon from 'feather-icons/dist/icons/minimize.svg'
+import MaximizeIcon from 'feather-icons/dist/icons/maximize.svg'
+import SendIcon from 'feather-icons/dist/icons/send.svg'
 
 type AuthorMap = { [key: string]: User }
 type AuthorNicks = { [key: string]: string | undefined }
@@ -354,14 +360,16 @@ export const ChannelView = ({
 						style={stringToColor(otherChannel)}
 					>
 						<Title>#{otherChannel}</Title>
-						<MinimizeButton
-							onClick={e => {
-								e.stopPropagation()
-								onCloseChannel(otherChannel)
-							}}
-						>
-							X
-						</MinimizeButton>
+						<Controls>
+							<UIButton
+								onClick={e => {
+									e.stopPropagation()
+									onCloseChannel(otherChannel)
+								}}
+							>
+								<CloseIcon />
+							</UIButton>
+						</Controls>
 					</OtherChannelHeader>
 				))}
 			<Header
@@ -371,9 +379,27 @@ export const ChannelView = ({
 				<Title>
 					Chat: <strong>#{selectedChannel}</strong>
 				</Title>
-				<span>
+				<Controls>
+					{!isMinimized && (
+						<UIButton
+							onClick={() => {
+								memoMinimized(true)
+							}}
+						>
+							<MinimizeIcon />
+						</UIButton>
+					)}
+					{isMinimized && (
+						<UIButton
+							onClick={() => {
+								memoMinimized(false)
+							}}
+						>
+							<MaximizeIcon />
+						</UIButton>
+					)}
 					{joinedChannels.length > 1 && (
-						<MinimizeButton
+						<UIButton
 							onClick={e => {
 								e.stopPropagation()
 								onSwitchChannel(
@@ -382,28 +408,10 @@ export const ChannelView = ({
 								onCloseChannel(selectedChannel)
 							}}
 						>
-							X
-						</MinimizeButton>
+							<CloseIcon />
+						</UIButton>
 					)}
-					{!isMinimized && (
-						<MinimizeButton
-							onClick={() => {
-								memoMinimized(true)
-							}}
-						>
-							_
-						</MinimizeButton>
-					)}
-					{isMinimized && (
-						<MinimizeButton
-							onClick={() => {
-								memoMinimized(false)
-							}}
-						>
-							+
-						</MinimizeButton>
-					)}
-				</span>
+				</Controls>
 			</Header>
 			{!isMinimized && (
 				<>
@@ -474,7 +482,7 @@ export const ChannelView = ({
 								channelConnection && sendMessage(channelConnection.channel)
 							}
 						>
-							send
+							<SendIcon />
 						</SendButton>
 					</Footer>
 				</>
