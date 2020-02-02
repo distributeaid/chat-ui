@@ -3,45 +3,51 @@ import { useLayoutEffect } from 'react'
 import styled from 'styled-components'
 import { Timestamp } from './Timestamp'
 import { emojify } from './Emojify'
+import { markdownify } from './Markdownify'
 import { UIButton } from './ChannelView'
 
 import DeleteIcon from 'feather-icons/dist/icons/trash-2.svg'
 
 const MessageView = styled.div`
-	border-radius: 10px;
-	background-color: #dbedff;
 	margin: 0.5rem 0.5rem 0.5rem 4rem;
 `
 
 const UserMessageView = styled(MessageView)`
 	margin: 0.5rem 4rem 0.5rem 0.5rem;
-	background-color: #dbfff7;
 `
 
 const Text = styled.div`
-	font-size: 95%;
-	padding: 0.5rem 0.5rem 0 0.5rem;
+	padding: 0;
+	a {
+		color: inherit;
+	}
+	font-weight: 400;
 `
 
 const Meta = styled.div`
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
 	font-size: 80%;
 	font-weight: 300;
-	margin: 0.5rem;
-	padding-bottom: 0.5rem;
-	opacity: 0.6;
+	margin: 0;
+	padding: 0.5rem;
+	opacity: 0.7;
 	time + ${UIButton} {
 		margin-left: 0.5rem;
+		opacity: inherit;
 	}
 `
 
 const From = styled.div`
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
 	font-size: 80%;
 	font-weight: 300;
-	padding: 0.5rem 0.5rem 0 0.5rem;
-	opacity: 0.85;
+	padding: 0.5rem;
+	opacity: 0.7;
 `
 
 const GreenIndicator = styled.span`
@@ -147,11 +153,13 @@ export const MessageItem = ({
 		onRendered()
 	})
 
+	const userColorStyle = stringToColor(from)
+
 	return (
-		<V style={stringToColor(from)}>
-			<From>{emojify(nick || from)}</From>
-			<Text>{emojify(message)}</Text>
-			<Meta>
+		<V>
+			<From style={userColorStyle}>{emojify(nick || from)}</From>
+			<Text style={userColorStyle}>{markdownify(message)}</Text>
+			<Meta style={userColorStyle}>
 				<Timestamp from={timestamp} />
 				{fromUser && (
 					<UIButton onClick={onDelete}>

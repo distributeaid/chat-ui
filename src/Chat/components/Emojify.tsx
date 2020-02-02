@@ -2,7 +2,7 @@ import * as React from 'react'
 import { parse } from 'twemoji'
 import styled from 'styled-components'
 
-const Twemoji = styled.span`
+export const WithTwemoji = styled.span`
 	img.emoji {
 		height: 1em;
 		width: 1em;
@@ -11,13 +11,16 @@ const Twemoji = styled.span`
 	}
 `
 
+export const convert = (text: string) =>
+	parse(text, {
+		folder: 'svg',
+		ext: '.svg',
+	})
+
 export const emojify = (text: string) => (
-	<Twemoji
+	<WithTwemoji
 		dangerouslySetInnerHTML={{
-			__html: parse(text, {
-				folder: 'svg',
-				ext: '.svg',
-			}),
+			__html: convert(text),
 		}}
 	/>
 )
