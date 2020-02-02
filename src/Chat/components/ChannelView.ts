@@ -53,9 +53,7 @@ export const UIButton = styled.button`
 	background-color: transparent;
 	height: 30px;
 	width: 30px;
-	${Header} & {
-		color: inherit;
-	}
+	color: inherit;
 	cursor: pointer;
 `
 

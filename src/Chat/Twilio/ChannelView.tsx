@@ -1,10 +1,6 @@
 import * as React from 'react'
 import { useState, useEffect, useLayoutEffect } from 'react'
-import {
-	MessageItem,
-	Message as MessageItemMessage,
-	stringToColor,
-} from '../components/MessageItem'
+import { MessageItem, stringToColor } from '../components/MessageItem'
 import { StatusItem, Status } from '../components/StatusItem'
 import { Channel } from 'twilio-chat/lib/channel'
 import { Client, User } from 'twilio-chat'
@@ -67,15 +63,11 @@ export const ChannelView = ({
 	}
 	const [message, setMessage] = useState<string>('')
 	const [messages, updateMessages] = useState<{
-		messages: (
-			| { sid: string; message: MessageItemMessage }
-			| { sid: string; status: Status }
-		)[]
+		messages: ({ message: Message } | { status: Status })[]
 		lastIndex?: number
 	}>({
 		messages: [
 			{
-				sid: v4(),
 				status: {
 					message: `Hint: type /help to list available commands.`,
 					timestamp: new Date(),
@@ -133,16 +125,6 @@ export const ChannelView = ({
 		setMessage('')
 	}
 
-	const toMessage = (message: Message) => ({
-		sid: message.sid,
-		message: {
-			timestamp: message.timestamp,
-			from: message.author,
-			message: message.body,
-			fromUser: message.author === identity,
-		},
-	})
-
 	const userChangedNickHandler = ({
 		updateReasons,
 		user,
@@ -176,7 +158,7 @@ export const ChannelView = ({
 	const newMessageHandler = (message: Message) => {
 		updateMessages(prevMessages => ({
 			...prevMessages,
-			messages: [...prevMessages.messages, toMessage(message)],
+			messages: [...prevMessages.messages, { message }],
 			lastIndex: prevMessages.lastIndex
 				? prevMessages.lastIndex
 				: message.index,
@@ -200,6 +182,15 @@ export const ChannelView = ({
 					console.error(err)
 				})
 		}
+	}
+
+	const messageRemovedHandler = (message: Message) => {
+		updateMessages(prevMessages => ({
+			...prevMessages,
+			messages: prevMessages.messages.filter(
+				m => 'status' in m || m.message.sid !== message.sid,
+			),
+		}))
 	}
 
 	const memberJoinedHandler = (member: Member) => {
@@ -237,12 +228,17 @@ export const ChannelView = ({
 	useEffect(() => {
 		if (channelConnection) {
 			channelConnection.channel.on('messageAdded', newMessageHandler)
+			channelConnection.channel.on('messageRemoved', messageRemovedHandler)
 			channelConnection.channel.on('memberJoined', memberJoinedHandler)
 			channelConnection.channel.on('memberLeft', memberLeftHandler)
 			return () => {
 				channelConnection.channel.removeListener(
 					'messageAdded',
 					newMessageHandler,
+				)
+				channelConnection.channel.removeListener(
+					'messageRemoved',
+					messageRemovedHandler,
 				)
 				channelConnection.channel.removeListener(
 					'memberJoined',
@@ -295,7 +291,7 @@ export const ChannelView = ({
 				updateMessages(prevMessages => ({
 					...prevMessages,
 					messages: [
-						...messages.items.map(toMessage),
+						...messages.items.map(message => ({ message })),
 						...prevMessages.messages,
 					],
 					lastIndex: messages.items[0]?.index ?? undefined,
@@ -432,17 +428,19 @@ export const ChannelView = ({
 									}}
 								/>
 							)}
-							{messages.messages.map(m =>
+							{messages.messages.map((m, i) =>
 								'status' in m ? (
-									<StatusItem key={m.sid} status={m.status} />
+									<StatusItem key={i} status={m.status} />
 								) : (
 									<MessageItem
-										key={m.sid}
+										key={m.message.sid}
 										message={{
-											...m.message,
-											from: m.message.from,
+											timestamp: m.message.timestamp,
+											from: m.message.author,
+											message: m.message.body,
+											fromUser: m.message.author === identity,
 										}}
-										nick={authorNicks[m.message.from]}
+										nick={authorNicks[m.message.author]}
 										onRendered={() => {
 											// Scroll to the last item in the list
 											// if not at beginning
@@ -456,6 +454,17 @@ export const ChannelView = ({
 														messageListRef.current.scrollHeight
 												}
 											}, 250)
+										}}
+										onDelete={() => {
+											if (confirm('Really delete this message?')) {
+												console.log(`Deleting message ${m.message.sid}`)
+												m.message
+													.remove()
+													.then(() => {
+														console.log('Removed')
+													})
+													.catch(console.error)
+											}
 										}}
 									/>
 								),

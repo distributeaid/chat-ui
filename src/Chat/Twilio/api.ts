@@ -102,9 +102,13 @@ export const authenticateClient = ({
 	apollo: ApolloClient<NormalizedCacheObject>
 }) =>
 	pipe(
-		TE.right({ apollo, deviceId, token }),
-		chain(createChatToken),
-		chain(createClient),
+		createChatToken({ apollo, deviceId, token }),
+		chain(token =>
+			pipe(
+				createClient(token),
+				TE.map(client => ({ client, token })),
+			),
+		),
 	)
 
 export const connectToChannel = async ({
@@ -117,16 +121,18 @@ export const connectToChannel = async ({
 	deviceId: string
 	token: string
 	apollo: ApolloClient<NormalizedCacheObject>
-}): Promise<Either<ErrorInfo, { client: Client; channel: Channel }>> =>
+}): Promise<Either<
+	ErrorInfo,
+	{ client: Client; channel: Channel; token: string }
+>> =>
 	pipe(
-		TE.right({ apollo, deviceId, token }),
-		chain(authenticateClient),
-		chain(client =>
+		authenticateClient({ apollo, deviceId, token }),
+		chain(({ client, token }) =>
 			pipe(
 				fetchSubscribedChannels(client),
 				TE.map(maybeAlreadyJoinedChannel(context)),
 				getOrElse(joinChannel({ client, channel: context })),
-				TE.map(channel => ({ client, channel })),
+				TE.map(channel => ({ client, channel, token })),
 			),
 		),
 	)()

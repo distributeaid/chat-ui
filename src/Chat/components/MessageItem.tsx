@@ -3,6 +3,9 @@ import { useLayoutEffect } from 'react'
 import styled from 'styled-components'
 import { Timestamp } from './Timestamp'
 import { emojify } from './Emojify'
+import { UIButton } from './ChannelView'
+
+import DeleteIcon from 'feather-icons/dist/icons/trash-2.svg'
 
 const MessageView = styled.div`
 	border-radius: 10px;
@@ -128,10 +131,12 @@ export const MessageItem = ({
 	message: { from, message, timestamp, fromUser },
 	nick,
 	onRendered,
+	onDelete,
 }: {
 	message: Message
 	nick?: string
 	onRendered: () => void
+	onDelete: () => void
 }) => {
 	const V = fromUser ? UserMessageView : MessageView
 
@@ -145,6 +150,11 @@ export const MessageItem = ({
 			<Text>{emojify(message)}</Text>
 			<Meta>
 				<Timestamp from={timestamp} />
+				{fromUser && (
+					<UIButton onClick={onDelete}>
+						<DeleteIcon />
+					</UIButton>
+				)}
 			</Meta>
 		</V>
 	)

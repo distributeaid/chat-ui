@@ -25,7 +25,7 @@ export const TwilioChat = ({
 	const [error, setError] = useState<{ type: string; message: string }>()
 	const [selectedChannel, setSelectedChannel] = useState<string>(context)
 	const [channelConnection, setConnectedChannel] = useState<
-		{ channel: Channel; client: Client } | undefined
+		{ channel: Channel; client: Client; token: string } | undefined
 	>()
 	const [joinedChannels, setJoinedChannels] = useState<string[]>([
 		...new Set(['general', 'random', context]),

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
-import { Message as MessageItemMessage } from './components/MessageItem'
+import { Message } from 'twilio-chat/lib/message'
 import { Status } from './components/StatusItem'
 import { v4 } from 'uuid'
 import {
@@ -20,11 +20,9 @@ type UpdateMessages = React.Dispatch<
 	React.SetStateAction<{
 		messages: (
 			| {
-					sid: string
-					message: MessageItemMessage
+					message: Message
 			  }
 			| {
-					sid: string
 					status: Status
 			  }
 		)[]
