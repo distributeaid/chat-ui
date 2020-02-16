@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const ChatWidget = styled.div`
-	position: absolute;
+	position: fixed;
 	z-index: 9999;
 	right: 1rem;
 	bottom: 1rem;

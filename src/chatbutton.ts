@@ -18,7 +18,7 @@ const imageUrl =
 	style.type = 'text/css'
 	style.textContent = `#distribute-aid-chat-button {
         background-color: #3777ec;
-        position: absolute;
+        position: fixed;
         bottom: 1rem;
         right: 1rem;
         border-radius: 100%;
