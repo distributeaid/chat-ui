@@ -19,7 +19,7 @@ export const chat = ({
 }) => {
 	const div = document.createElement('div')
 	div.id = 'distribute-aid-chat'
-	document.documentElement.appendChild(div)
+	document.body.appendChild(div)
 
 	const httpLink = createHttpLink({
 		uri: apiEndpoint,
