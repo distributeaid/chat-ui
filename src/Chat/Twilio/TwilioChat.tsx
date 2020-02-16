@@ -64,11 +64,13 @@ export const TwilioChat = ({
 				<strong>Preview!</strong> This is a development preview of the chat.
 				Please report all issues in{' '}
 				<a
-					href={'https://gitlab.com/distribute-aid/toolbox/issues/95'}
+					href={
+						'https://www.notion.so/distributeaid/Chat-Feature-Feedback-d874a722bd1e40b388e71eaaeef0d3d5'
+					}
 					target={'_blank'}
 					rel={'noopener noreferrer'}
 				>
-					this GitLab issue
+					notion
 				</a>
 				.
 			</Notice>
