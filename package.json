@@ -31,7 +31,7 @@
     "@types/showdown": "^1.9.3",
     "@types/styled-components": "^4.4.3",
     "@types/twemoji": "^12.1.0",
-    "@types/uuid": "^3.4.7",
+    "@types/uuid": "^7.0.0",
     "eslint-plugin-react": "^7.18.3",
     "handlebars": "^4.7.3",
     "husky": "^4.2.3",
