@@ -4,7 +4,6 @@ export const Header = styled.div`
 	display: flex;
 	justify-content: space-between;
 	font-weight: 300;
-	font-family: 'Inter', sans-serif;
 	align-items: center;
 	width: 100%;
 	height: 40px;
@@ -24,7 +23,6 @@ export const Footer = styled(Header)`
 `
 
 export const TextButton = styled.button`
-	font-family: 'Inter', sans-serif;
 	background-color: transparent;
 	border: 0;
 	margin: 0;
@@ -55,7 +53,6 @@ export const Controls = styled.div`
 	}
 `
 export const Button = styled.button`
-	font-family: 'Inter', sans-serif;
 	background-color: transparent;
 	border: 1px solid;
 	height: 30px;
@@ -77,7 +74,6 @@ export const SendButton = styled.button`
 
 export const MessageInput = styled.input`
 	flex-grow: 1;
-	font-family: 'Inter', sans-serif;
 	background-color: #fff;
 	border: 1px solid;
 	height: 28px;

@@ -5,7 +5,6 @@ const Header = styled.div`
 	background-color: #fa0000;
 	color: #ffffff;
 	font-weight: 300;
-	font-family: 'Inter', sans-serif;
 	width: 100%;
 `
 

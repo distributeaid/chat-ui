@@ -1,108 +1,117 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-  <meta charset="UTF-8" />
-  <title>Distribute Aid: Chat</title>
-  <meta name="chat:context" content="general" />
-  <meta name="chat:endpoint" content="{{GRAPHQL_API_ENDPOINT}}" />
-  <meta name="chat:apiKey" content="{{GRAPHQL_API_KEY}}" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter-ui.css"
-    integrity="sha256-cdb8LF5k6q+Mbl8Od9ARdnDUCjihJZocnLNXYUFtMmg=" crossorigin="" />
-</head>
-
-<body>
-  <h1>Distribute Aid: Chat</h1>
-
-  <p>This is the demo page for the <em>Distribute Aid</em> in-app-chat.</p>
-
-  <p>
-    It will be loaded from an external source, and will create it's DOM
-    element with an overlaying chat window.
-  </p>
-
-  <p>
-    Every chat has a <em>context</em>, which needs to be provided. In this
-    example we use the <code>general</code> context, which is a public chat
-    room that is available for all authenticated users.
-  </p>
-
-  <p>
-    The API endpoint of the integration for this instance is
-    <code>{{GRAPHQL_API_ENDPOINT}}</code>.
-  </p>
-
-  <p><strong>Preview mode:</strong> Note that the chat will only load if the <code>DAChat:enabled</code> is set in
-    localStorage. Run this command in the console to enable it:
-    <code>window.localStorage.setItem('DAChat:enabled', '1')</code></p>
-
-  <div id="tokenform"></div>
-
-  <script src="https://cdn.rawgit.com/muicss/loadjs/4.2.0/dist/loadjs.min.js" defer></script>
-  <script type="text/javascript">
-    const launchChat = token =>
-      DAChat({
-        context: document
-          .querySelector("meta[name='chat:context']")
-          .getAttribute("content"),
-        apiKey: document
-          .querySelector("meta[name='chat:apiKey']")
-          .getAttribute("content"),
-        apiEndpoint: document
-          .querySelector("meta[name='chat:endpoint']")
-          .getAttribute("content"),
-        token
-      });
-
-    const loadJsAsync = deps => loadjs(deps, {
-      async: true,
-      returnPromise: true
-    })
-
-    const loadChat = () => {
-      loadJsAsync([
-        'https://unpkg.com/react@16/umd/react.development.js',
-        'https://unpkg.com/react-dom@16/umd/react-dom.development.js',
-        'https://media.twiliocdn.com/sdk/js/chat/v3.3/twilio-chat.min.js',
-        'https://twemoji.maxcdn.com/v/latest/twemoji.min.js',
-
-      ])
-        .then(() => loadJsAsync([
-          './main.js',
-          './demo.js',
-        ]))
-        .then(() => {
-          ReactDOM.render(
-            React.createElement(TokenForm, {
-              onToken: token => launchChat(token)
-            }),
-            document.querySelector("#tokenform")
-          );
-        })
-    };
-
-    window.onload = () => {
-      if (window.localStorage.getItem('DAChat:enabled') === '1') {
-        if (document.cookie.split(';').filter((item) => item.trim().startsWith('DAChatopen=')).length) {
-          loadChat()
-        } else {
-          console.log('not open')
-          loadJsAsync([
-            './chatbutton.js'
-          ])
-            .then(() => {
-              DAChatButton((removeButton) => {
-                document.cookie = 'DAChatopen=1'
-                loadChat()
-                  .then(() => {
-                    removeButton()
-                  })
-              })
-            })
-        }
+  <head>
+    <meta charset="UTF-8" />
+    <title>Distribute Aid: Chat</title>
+    <meta name="chat:context" content="general" />
+    <meta name="chat:endpoint" content="{{GRAPHQL_API_ENDPOINT}}" />
+    <meta name="chat:apiKey" content="{{GRAPHQL_API_KEY}}" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Quicksand&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      html,
+      body {
+        font-family: "Quicksand", sans-serif;
       }
-    }
-  </script>
-</body>
+    </style>
+  </head>
 
+  <body>
+    <h1>Distribute Aid: Chat</h1>
+
+    <p>This is the demo page for the <em>Distribute Aid</em> in-app-chat.</p>
+
+    <p>
+      It will be loaded from an external source, and will create it's DOM
+      element with an overlaying chat window.
+    </p>
+
+    <p>
+      Every chat has a <em>context</em>, which needs to be provided. In this
+      example we use the <code>general</code> context, which is a public chat
+      room that is available for all authenticated users.
+    </p>
+
+    <p>
+      The API endpoint of the integration for this instance is
+      <code>{{GRAPHQL_API_ENDPOINT}}</code>.
+    </p>
+
+    <p>
+      <strong>Preview mode:</strong> Note that the chat will only load if the
+      <code>DAChat:enabled</code> is set in localStorage. Run this command in
+      the console to enable it:
+      <code>window.localStorage.setItem('DAChat:enabled', '1')</code>
+    </p>
+
+    <div id="tokenform"></div>
+
+    <script
+      src="https://cdn.rawgit.com/muicss/loadjs/4.2.0/dist/loadjs.min.js"
+      defer
+    ></script>
+    <script type="text/javascript">
+      const launchChat = token =>
+        DAChat({
+          context: document
+            .querySelector("meta[name='chat:context']")
+            .getAttribute("content"),
+          apiKey: document
+            .querySelector("meta[name='chat:apiKey']")
+            .getAttribute("content"),
+          apiEndpoint: document
+            .querySelector("meta[name='chat:endpoint']")
+            .getAttribute("content"),
+          token
+        });
+
+      const loadJsAsync = deps =>
+        loadjs(deps, {
+          async: true,
+          returnPromise: true
+        });
+
+      const loadChat = () => {
+        loadJsAsync([
+          "https://unpkg.com/react@16/umd/react.development.js",
+          "https://unpkg.com/react-dom@16/umd/react-dom.development.js",
+          "https://media.twiliocdn.com/sdk/js/chat/v3.3/twilio-chat.min.js",
+          "https://twemoji.maxcdn.com/v/latest/twemoji.min.js"
+        ])
+          .then(() => loadJsAsync(["./main.js", "./demo.js"]))
+          .then(() => {
+            ReactDOM.render(
+              React.createElement(TokenForm, {
+                onToken: token => launchChat(token)
+              }),
+              document.querySelector("#tokenform")
+            );
+          });
+      };
+
+      window.onload = () => {
+        if (window.localStorage.getItem("DAChat:enabled") === "1") {
+          if (
+            document.cookie
+              .split(";")
+              .filter(item => item.trim().startsWith("DAChatopen=")).length
+          ) {
+            loadChat();
+          } else {
+            console.log("not open");
+            loadJsAsync(["./chatbutton.js"]).then(() => {
+              DAChatButton(removeButton => {
+                document.cookie = "DAChatopen=1";
+                loadChat().then(() => {
+                  removeButton();
+                });
+              });
+            });
+          }
+        }
+      };
+    </script>
+  </body>
 </html>
