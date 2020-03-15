@@ -3,11 +3,6 @@ import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { Message } from 'twilio-chat/lib/message'
 import { Status } from './components/StatusItem'
 import { v4 } from 'uuid'
-import {
-	verifyTokenQuery,
-	VerifyTokenQueryResult,
-	VerifyTokenVariables,
-} from '../graphql/verifyTokenQuery'
 import * as TE from 'fp-ts/lib/TaskEither'
 import { verifyToken } from './Twilio/api'
 import { pipe } from 'fp-ts/lib/pipeable'
@@ -32,6 +27,10 @@ type UpdateMessages = React.Dispatch<
 		lastIndex?: number | undefined
 	}>
 >
+
+const logError = (err: Error) => {
+	console.error(err)
+}
 
 export const SlashCommandHandler = ({
 	apollo,
@@ -107,33 +106,24 @@ export const SlashCommandHandler = ({
 				TE.mapLeft(err => {
 					showMessage(`Failed to verify token: ${err.message}`)
 				}),
-			)().catch(err => {
-				console.error(err)
-			})
+			)().catch(logError)
 			break
 		case SlashCommand.NICK:
 			onChangeNick(arg as string)
 			break
 		case SlashCommand.ME:
-			apollo
-				.query<VerifyTokenQueryResult, VerifyTokenVariables>({
-					query: verifyTokenQuery,
-					variables: { token },
-				})
-				.then(({ data }) => {
-					if (!data) {
-						showMessage(`Failed to verify token!`)
-					} else {
-						const { identity, contexts } = data.verifyToken
-						showMessage(
-							`Hey ${identity}, you are allowed to access these channels: ${contexts.join(
-								',',
-							)}.`,
-						)
-					}
-				})
-				.catch(err => {
+			pipe(
+				verifyToken({ apollo, token }),
+				TE.map(({ identity, contexts }) => {
+					showMessage(
+						`Hey ${identity}, you are allowed to access these channels: ${contexts.join(
+							',',
+						)}.`,
+					)
+				}),
+				TE.mapLeft(err => {
 					showMessage(`Failed to verify token: ${err.message}`)
-				})
+				}),
+			)().catch(logError)
 	}
 }
