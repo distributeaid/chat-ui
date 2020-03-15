@@ -8,6 +8,9 @@ import {
 	VerifyTokenQueryResult,
 	VerifyTokenVariables,
 } from '../graphql/verifyTokenQuery'
+import * as TE from 'fp-ts/lib/TaskEither'
+import { verifyToken } from './Twilio/api'
+import { pipe } from 'fp-ts/lib/pipeable'
 
 export enum SlashCommand {
 	HELP = 'help',
@@ -43,32 +46,70 @@ export const SlashCommandHandler = ({
 	onChangeNick: (nick: string) => void
 	token: string
 }) => (cmd: SlashCommand, arg?: string) => {
+	const showMessage = (message: string | React.ReactNode) =>
+		updateMessages(prevMessages => ({
+			...prevMessages,
+			messages: [
+				...prevMessages.messages,
+				{
+					sid: v4(),
+					status: {
+						message,
+						timestamp: new Date(),
+					},
+				},
+			],
+		}))
+
 	switch (cmd) {
 		case SlashCommand.HELP:
-			updateMessages(prevMessages => ({
-				...prevMessages,
-				messages: [
-					...prevMessages.messages,
-					{
-						sid: v4(),
-						status: {
-							message: (
-								<p>
-									/me: show information about you
-									<br />
-									/join <code>&lt;channel&gt;</code>: join another channel
-									<br />
-									/nick <code>&lt;nickname&gt;</code>: set your nickname
-								</p>
-							),
-							timestamp: new Date(),
-						},
-					},
-				],
-			}))
+			showMessage(
+				<p>
+					/me: show information about you
+					<br />
+					/join <code>&lt;channel&gt;</code>: join another channel
+					<br />
+					/nick <code>&lt;nickname&gt;</code>: set your nickname
+				</p>,
+			)
 			break
 		case SlashCommand.JOIN:
-			onSwitchChannel(arg as string)
+			console.log(token)
+			if (!arg || !arg.length) {
+				showMessage(
+					<p>
+						You must provide a channel name, e.g.:{' '}
+						<code>/join some-channel</code>!
+					</p>,
+				)
+				return
+			}
+			showMessage(
+				<p>
+					Joining <code>{arg}</code>...
+				</p>,
+			)
+			pipe(
+				verifyToken({ apollo, token }),
+				TE.map(({ contexts }) => {
+					if (!contexts.includes(arg)) {
+						showMessage(
+							<p>
+								You are not allowed to join the channel <code>{arg}</code>.
+								<br />
+								These are the cannels join can join: {contexts.join(', ')}
+							</p>,
+						)
+						return
+					}
+					onSwitchChannel(arg)
+				}),
+				TE.mapLeft(err => {
+					showMessage(`Failed to verify token: ${err.message}`)
+				}),
+			)().catch(err => {
+				console.error(err)
+			})
 			break
 		case SlashCommand.NICK:
 			onChangeNick(arg as string)
@@ -81,52 +122,18 @@ export const SlashCommandHandler = ({
 				})
 				.then(({ data }) => {
 					if (!data) {
-						updateMessages(prevMessages => ({
-							...prevMessages,
-							messages: [
-								...prevMessages.messages,
-								{
-									sid: v4(),
-									status: {
-										message: `Failed to verify token!`,
-										timestamp: new Date(),
-									},
-								},
-							],
-						}))
+						showMessage(`Failed to verify token!`)
 					} else {
 						const { identity, contexts } = data.verifyToken
-						updateMessages(prevMessages => ({
-							...prevMessages,
-							messages: [
-								...prevMessages.messages,
-								{
-									sid: v4(),
-									status: {
-										message: `Hey ${identity}, you are allowed to access these channels: ${contexts.join(
-											',',
-										)}.`,
-										timestamp: new Date(),
-									},
-								},
-							],
-						}))
+						showMessage(
+							`Hey ${identity}, you are allowed to access these channels: ${contexts.join(
+								',',
+							)}.`,
+						)
 					}
 				})
 				.catch(err => {
-					updateMessages(prevMessages => ({
-						...prevMessages,
-						messages: [
-							...prevMessages.messages,
-							{
-								sid: v4(),
-								status: {
-									message: `Failed to verify token: ${err.message}`,
-									timestamp: new Date(),
-								},
-							},
-						],
-					}))
+					showMessage(`Failed to verify token: ${err.message}`)
 				})
 	}
 }

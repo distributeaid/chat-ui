@@ -13,6 +13,11 @@ import { pipe } from 'fp-ts/lib/pipeable'
 import { Option, fromNullable } from 'fp-ts/lib/Option'
 import { Paginator } from 'twilio-chat/lib/interfaces/paginator'
 import { getOrElse } from '../../fp-ts.util'
+import {
+	VerifyTokenQueryResult,
+	VerifyTokenVariables,
+	verifyTokenQuery,
+} from '../../graphql/verifyTokenQuery'
 
 type ErrorInfo = {
 	type: string
@@ -46,6 +51,34 @@ const createChatToken = ({
 		reason => ({
 			type: 'IntegrationError',
 			message: `Creating chat token failed: ${(reason as Error).message}`,
+		}),
+	)
+
+export const verifyToken = ({
+	apollo,
+	token,
+}: {
+	token: string
+	apollo: ApolloClient<NormalizedCacheObject>
+}) =>
+	tryCatch<ErrorInfo, { identity: string; contexts: string[] }>(
+		async () =>
+			apollo
+				.query<VerifyTokenQueryResult, VerifyTokenVariables>({
+					query: verifyTokenQuery,
+					variables: { token },
+				})
+				.then(({ data }) => {
+					if (!data) {
+						throw new Error('No response received!')
+					} else {
+						const { identity, contexts } = data.verifyToken
+						return { identity, contexts }
+					}
+				}),
+		reason => ({
+			type: 'TokenError',
+			message: `Failed to verify token: ${(reason as Error).message}`,
 		}),
 	)
 
