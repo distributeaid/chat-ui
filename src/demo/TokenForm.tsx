@@ -54,7 +54,7 @@ export const TokenForm = ({
 					value={token}
 					onChange={({ target: { value } }) => memoToken(value)}
 				></textarea>
-				{token.length && <Token {...parseToken(token)} />}
+				{token.length > 0 && <Token {...parseToken(token)} />}
 			</fieldset>
 		</form>
 	)

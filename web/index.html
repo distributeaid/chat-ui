@@ -74,7 +74,7 @@
           returnPromise: true
         });
 
-      const loadChat = () => {
+      const loadChat = async () => {
         loadJsAsync([
           "https://unpkg.com/react@16/umd/react.development.js",
           "https://unpkg.com/react-dom@16/umd/react-dom.development.js",
@@ -101,7 +101,6 @@
           ) {
             loadChat();
           } else {
-            console.log("not open");
             loadJsAsync(["./chatbutton.js"]).then(() => {
               DAChatButton(removeButton => {
                 document.cookie = "DAChatopen=1";
