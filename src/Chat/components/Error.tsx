@@ -1,5 +1,6 @@
 import * as React from 'react'
 import styled from 'styled-components'
+import { ErrorInfo } from '../Twilio/api'
 
 const Header = styled.div`
 	background-color: #fa0000;
@@ -13,7 +14,7 @@ const Text = styled.p`
 	padding: 0.5rem 0.5rem 0.5rem 1rem;
 `
 
-export const Error = ({ type, message }: { type: string; message: string }) => (
+export const Error = ({ type, message }: ErrorInfo) => (
 	<Header>
 		<Text>
 			<strong>{type}:</strong> {message}

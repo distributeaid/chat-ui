@@ -7,7 +7,7 @@ import { Channel } from 'twilio-chat/lib/channel'
 import { Client } from 'twilio-chat'
 import { ChatWidget } from '../components/ChatWidget'
 import { Notice } from '../components/Notice'
-import { connectToChannel } from './api'
+import { connectToChannel, ErrorInfo } from './api'
 import { isLeft } from 'fp-ts/lib/Either'
 
 export const TwilioChat = ({
@@ -22,7 +22,7 @@ export const TwilioChat = ({
 	token: string
 }) => {
 	const identity = JSON.parse(atob(token.split('.')[1])).sub
-	const [error, setError] = useState<{ type: string; message: string }>()
+	const [error, setError] = useState<ErrorInfo>()
 	const [selectedChannel, setSelectedChannel] = useState<string>(context)
 	const [channelConnection, setConnectedChannel] = useState<
 		{ channel: Channel; client: Client; token: string } | undefined

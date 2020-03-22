@@ -74,7 +74,7 @@
           returnPromise: true
         });
 
-      const loadChat = async () => {
+      const loadChat = async () =>
         loadJsAsync([
           "https://unpkg.com/react@16/umd/react.development.js",
           "https://unpkg.com/react-dom@16/umd/react-dom.development.js",
@@ -90,7 +90,6 @@
               document.querySelector("#tokenform")
             );
           });
-      };
 
       window.onload = () => {
         if (window.localStorage.getItem("DAChat:enabled") === "1") {

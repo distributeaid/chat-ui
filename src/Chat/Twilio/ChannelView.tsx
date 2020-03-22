@@ -23,11 +23,13 @@ import {
 	Controls,
 } from '../components/ChannelView'
 import { UserDescriptor } from 'twilio-chat/lib/userdescriptor'
+import { SubscribeToChannel } from '../notifications/SubscribeToChannel'
 
 import CloseIcon from 'feather-icons/dist/icons/x-square.svg'
 import MinimizeIcon from 'feather-icons/dist/icons/minimize.svg'
 import MaximizeIcon from 'feather-icons/dist/icons/maximize.svg'
 import SendIcon from 'feather-icons/dist/icons/send.svg'
+import AlertIcon from 'feather-icons/dist/icons/bell.svg'
 
 type AuthorMap = { [key: string]: User }
 type AuthorNicks = { [key: string]: string | undefined }
@@ -85,6 +87,10 @@ export const ChannelView = ({
 			)
 		}
 	})
+
+	const [notificationSettingsVisible, showNotificationSettings] = useState<
+		boolean
+	>(false)
 
 	const onSlashCommand = SlashCommandHandler({
 		apollo,
@@ -358,6 +364,7 @@ export const ChannelView = ({
 						<Title>#{otherChannel}</Title>
 						<Controls>
 							<UIButton
+								title={'Close channel'}
 								onClick={e => {
 									e.stopPropagation()
 									onCloseChannel(otherChannel)
@@ -376,8 +383,18 @@ export const ChannelView = ({
 					Chat: <strong>#{selectedChannel}</strong>
 				</Title>
 				<Controls>
+					<UIButton
+						title={'Enable offline notifications'}
+						onClick={e => {
+							e.stopPropagation()
+							showNotificationSettings(visible => !visible)
+						}}
+					>
+						<AlertIcon />
+					</UIButton>
 					{!isMinimized && (
 						<UIButton
+							title={'Minimize channel'}
 							onClick={() => {
 								memoMinimized(true)
 							}}
@@ -387,6 +404,7 @@ export const ChannelView = ({
 					)}
 					{isMinimized && (
 						<UIButton
+							title={'Maximize channel'}
 							onClick={() => {
 								memoMinimized(false)
 							}}
@@ -396,6 +414,7 @@ export const ChannelView = ({
 					)}
 					{joinedChannels.length > 1 && (
 						<UIButton
+							title={'Close channel'}
 							onClick={e => {
 								e.stopPropagation()
 								onSwitchChannel(
@@ -409,6 +428,13 @@ export const ChannelView = ({
 					)}
 				</Controls>
 			</Header>
+			{channelConnection && notificationSettingsVisible && (
+				<SubscribeToChannel
+					channel={channelConnection.channel}
+					apollo={apollo}
+					token={token}
+				/>
+			)}
 			{!isMinimized && (
 				<>
 					<MessageListContainer>

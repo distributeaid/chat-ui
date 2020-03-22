@@ -18,8 +18,18 @@ import {
 	VerifyTokenVariables,
 	verifyTokenQuery,
 } from '../../graphql/verifyTokenQuery'
+import {
+	EnableChannelNotificationsMutationResult,
+	EnableChannelNotificationsMutationVariables,
+	enableChannelNotificationsMutation,
+} from '../../graphql/enableChannelNotifications'
+import {
+	VerifyEmailMutationResult,
+	VerifyEmailMutationVariables,
+	verifyEmailMutation,
+} from '../../graphql/verifyEmailMutation'
 
-type ErrorInfo = {
+export type ErrorInfo = {
 	type: string
 	message: string
 }
@@ -169,3 +179,68 @@ export const connectToChannel = async ({
 			),
 		),
 	)()
+
+export const enableChannelNotifications = ({
+	apollo,
+	token,
+	email,
+	channel,
+}: {
+	token: string
+	channel: string
+	email: string
+	apollo: ApolloClient<NormalizedCacheObject>
+}) =>
+	tryCatch<ErrorInfo, { emailVerified: boolean }>(
+		async () =>
+			apollo
+				.mutate<
+					EnableChannelNotificationsMutationResult,
+					EnableChannelNotificationsMutationVariables
+				>({
+					mutation: enableChannelNotificationsMutation,
+					variables: { token, channel, email },
+				})
+				.then(({ data }) => {
+					if (!data) {
+						throw new Error('No response received!')
+					} else {
+						return data.enableChannelNotifications
+					}
+				}),
+		reason => ({
+			type: 'IntegrationError',
+			message: `Failed to enable channel notifications: ${
+				(reason as Error).message
+			}`,
+		}),
+	)
+
+export const verifyEmail = ({
+	apollo,
+	email,
+	code,
+}: {
+	code: string
+	email: string
+	apollo: ApolloClient<NormalizedCacheObject>
+}) =>
+	tryCatch<ErrorInfo, boolean>(
+		async () =>
+			apollo
+				.mutate<VerifyEmailMutationResult, VerifyEmailMutationVariables>({
+					mutation: verifyEmailMutation,
+					variables: { code, email },
+				})
+				.then(({ data }) => {
+					if (!data) {
+						throw new Error('No response received!')
+					} else {
+						return data.verifyEmail
+					}
+				}),
+		reason => ({
+			type: 'IntegrationError',
+			message: `Failed to verify email: ${(reason as Error).message}`,
+		}),
+	)
