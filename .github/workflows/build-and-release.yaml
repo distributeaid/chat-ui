@@ -35,7 +35,7 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Publish latest release to GitHub
-        if: github.ref == 'saga'
+        if: contains(github.ref, "saga")
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
