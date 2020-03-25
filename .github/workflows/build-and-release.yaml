@@ -34,8 +34,8 @@ jobs:
           GRAPHQL_API_KEY: ${{ secrets.GRAPHQL_API_KEY }}
       - name: Lint
         run: npm run lint
-      - name: Publish latest release to GitHub
-        if: contains(github.ref, "saga")
+      - name: Publish latest release to GitHub pages
+        if: contains(github.ref, 'saga')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
