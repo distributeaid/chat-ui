@@ -62,15 +62,21 @@ export const TwilioChat = ({
 		<ChatWidget>
 			<Notice>
 				<strong>Preview!</strong> This is a development preview of the chat.
-				Please report all issues in{' '}
+				Please report all issues in the{' '}
 				<a
-					href={
-						'https://www.notion.so/distributeaid/Chat-Feature-Feedback-d874a722bd1e40b388e71eaaeef0d3d5'
-					}
+					href={'https://distribute-aid.slack.com/archives/C010UBFU0P9'}
 					target={'_blank'}
 					rel={'noopener noreferrer'}
 				>
-					notion
+					<code>#dev-chat</code>
+				</a>{' '}
+				channel in our{' '}
+				<a
+					href={'https://distribute-aid.slack.com/'}
+					target={'_blank'}
+					rel={'noopener noreferrer'}
+				>
+					Slack
 				</a>
 				.
 			</Notice>
