@@ -44,17 +44,29 @@ export const TokenForm = ({
 		}
 	})
 
+	const parsedToken = parseToken(token)
+
 	return (
 		<form onSubmit={e => e.preventDefault()}>
 			<fieldset>
 				<legend>Token</legend>
+				<p>Enter a token here and click apply.</p>
 				<textarea
 					style={{ width: '100%' }}
 					placeholder={'Paste your token here'}
 					value={token}
 					onChange={({ target: { value } }) => memoToken(value)}
 				></textarea>
-				{token.length > 0 && <Token {...parseToken(token)} />}
+				<button
+					type="button"
+					onClick={() => {
+						document.location.reload()
+					}}
+					disabled={parsedToken?.header?.typ !== 'JWT' ?? true}
+				>
+					apply
+				</button>
+				{token.length > 0 && <Token {...parsedToken} />}
 			</fieldset>
 		</form>
 	)
