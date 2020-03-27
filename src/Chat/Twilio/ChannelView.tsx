@@ -44,6 +44,7 @@ export const ChannelView = ({
 	selectedChannel,
 	onCloseChannel,
 	onChangeNick,
+	headerExtras,
 }: {
 	channelConnection?: { channel: Channel; client: Client }
 	identity: string
@@ -54,6 +55,7 @@ export const ChannelView = ({
 	onSwitchChannel: (channel: string) => void
 	onChangeNick: (nick: string) => void
 	onCloseChannel: (channel: string) => void
+	headerExtras?: React.ReactNode
 }) => {
 	const storageKey = `DAChat:minimized`
 	const [isMinimized, minimize] = useState<boolean>(
@@ -383,6 +385,7 @@ export const ChannelView = ({
 					Chat: <strong>#{selectedChannel}</strong>
 				</Title>
 				<Controls>
+					{headerExtras}
 					<UIButton
 						title={'Enable offline notifications'}
 						onClick={e => {

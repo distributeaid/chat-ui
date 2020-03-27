@@ -6,7 +6,7 @@ import { ChannelView } from './ChannelView'
 import { Channel } from 'twilio-chat/lib/channel'
 import { Client } from 'twilio-chat'
 import { ChatWidget } from '../components/ChatWidget'
-import { Notice } from '../components/Notice'
+import { DevNotice, DevNoticeToggle } from '../components/Notice'
 import { connectToChannel, ErrorInfo } from './api'
 import { isLeft } from 'fp-ts/lib/Either'
 
@@ -30,6 +30,9 @@ export const TwilioChat = ({
 	const [joinedChannels, setJoinedChannels] = useState<string[]>([
 		...new Set(['general', context]),
 	])
+	const [devNoteClosed, setDevNoteClosed] = useState<boolean>(
+		window.localStorage.getItem('dachat:devnote:closed') === '1',
+	)
 
 	const connect = async (context: string) => {
 		setSelectedChannel(context)
@@ -60,26 +63,14 @@ export const TwilioChat = ({
 
 	return (
 		<ChatWidget>
-			<Notice>
-				<strong>Preview!</strong> This is a development preview of the chat.
-				Please report all issues in the{' '}
-				<a
-					href={'https://distribute-aid.slack.com/archives/C010UBFU0P9'}
-					target={'_blank'}
-					rel={'noopener noreferrer'}
-				>
-					<code>#dev-chat</code>
-				</a>{' '}
-				channel in our{' '}
-				<a
-					href={'https://distribute-aid.slack.com/'}
-					target={'_blank'}
-					rel={'noopener noreferrer'}
-				>
-					Slack
-				</a>
-				.
-			</Notice>
+			{!devNoteClosed && (
+				<DevNotice
+					onClosed={() => {
+						window.localStorage.setItem('dachat:devnote:closed', '1')
+						setDevNoteClosed(true)
+					}}
+				/>
+			)}
 			<ChannelView
 				key={selectedChannel}
 				channelConnection={channelConnection}
@@ -116,6 +107,23 @@ export const TwilioChat = ({
 				onCloseChannel={channel => {
 					setJoinedChannels(joinedChannels.filter(c => c !== channel))
 				}}
+				headerExtras={
+					<>
+						<DevNoticeToggle
+							style={{ opacity: devNoteClosed ? 1 : 0.5 }}
+							onClick={e => {
+								e.stopPropagation()
+								setDevNoteClosed(closed => {
+									window.localStorage.setItem(
+										'dachat:devnote:closed',
+										closed ? '0' : '1',
+									)
+									return !closed
+								})
+							}}
+						/>
+					</>
+				}
 			/>
 			{error && <Error type={error.type} message={error.message} />}
 		</ChatWidget>
