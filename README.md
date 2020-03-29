@@ -60,6 +60,10 @@ The small chat button is only show if a localStorage setting is enabled:
 `window.localStorage.setItem('DAChat:enabled', '1')`, this way we can test the
 feature without needing a feature flag in the toolbox.
 
+## Introduction to the project structure
+
+[![Introduction to the project structure](./docs/video.png)](https://www.youtube.com/watch?v=Fy0esVulYVM)
+
 ## UI and features
 
 > **Note:** This documentation is for version
