@@ -54,7 +54,7 @@ which only has a weight of 4KB (a loader for JS files and the chat icon), only
 after the user clicks the button, the JavaScript for the entire chat widget will
 be loaded. A cookie will remember whether the chat should be open.
 
-![vokoscreenNG-2020-02-02_00-44-23](https://github.com/distributeaid/chat-ui/releases/download/v1.17.1/vokoscreenNG-2020-02-02_00-44-23.webm.gif)
+![vokoscreenNG-2020-02-02_00-44-23](./docs/vokoscreenNG-2020-02-02_00-44-23.webm.gif)
 
 The small chat button is only show if a localStorage setting is enabled:
 `window.localStorage.setItem('DAChat:enabled', '1')`, this way we can test the
