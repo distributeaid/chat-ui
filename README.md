@@ -54,7 +54,7 @@ which only has a weight of 4KB (a loader for JS files and the chat icon), only
 after the user clicks the button, the JavaScript for the entire chat widget will
 be loaded. A cookie will remember whether the chat should be open.
 
-![vokoscreenNG-2020-02-02_00-44-23](https://github.com/distributeaid/chat-ui/releases/download/v1.17.1/vokoscreenNG-2020-02-02_00-44-23.webm)
+![vokoscreenNG-2020-02-02_00-44-23](https://github.com/distributeaid/chat-ui/releases/download/v1.17.1/vokoscreenNG-2020-02-02_00-44-23.webm.gif)
 
 The small chat button is only show if a localStorage setting is enabled:
 `window.localStorage.setItem('DAChat:enabled', '1')`, this way we can test the
@@ -84,7 +84,7 @@ feature without needing a feature flag in the toolbox.
 
 The chat button will now show up.
 
-![Enabling the chat for your browser](./docs/vokoscreenNG-2020-02-09_16-58-32.webm)
+![Enabling the chat for your browser](./docs/vokoscreenNG-2020-02-09_16-58-32.webm.gif)
 
 ### Opening the chat
 
@@ -113,30 +113,30 @@ send icon. Markdown is supported.
 
 You can delete messages by clicking the delete icon.
 
-![Writing chat messages](./docs/vokoscreenNG-2020-02-09_17-17-37.webm)
+![Writing chat messages](./docs/vokoscreenNG-2020-02-09_17-17-37.webm.gif)
 
 ### Switching channels
 
 Click on the top bars to switch between your channels:
 
-![Switching channels](./docs/vokoscreenNG-2020-02-09_17-07-38.webm)
+![Switching channels](./docs/vokoscreenNG-2020-02-09_17-07-38.webm.gif)
 
 ### Leave a channel
 
 Click the close icon to leave a channel. For now, the channel will be restored
 on the next page reload. You cannot leave the last remaining channel.
 
-![Leave a channel](./docs/vokoscreenNG-2020-02-09_17-10-17.webm)
+![Leave a channel](./docs/vokoscreenNG-2020-02-09_17-10-17.webm.gif)
 
 ### Minimize Chat
 
 Click the minimize icon to minimize the chat UI:
 
-![Minimize Chat](./docs/vokoscreenNG-2020-02-09_17-11-09.webm)
+![Minimize Chat](./docs/vokoscreenNG-2020-02-09_17-11-09.webm.gif)
 
 ### Slash Commands
 
 The chat supports slash commands which you run by typing `/` and a command. Try
 `/help`, it will list all available commands.
 
-![Slash Commands](./docs/vokoscreenNG-2020-02-09_17-15-19.webm)
+![Slash Commands](./docs/vokoscreenNG-2020-02-09_17-15-19.webm.gif)
