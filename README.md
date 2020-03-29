@@ -84,7 +84,7 @@ feature without needing a feature flag in the toolbox.
 
 The chat button will now show up.
 
-![Enabling the chat for your browser](/uploads/6b9ec99b78e323add8bcba925ce8544e/vokoscreenNG-2020-02-09_16-58-32.webm)
+![Enabling the chat for your browser](./docs/vokoscreenNG-2020-02-09_16-58-32.webm)
 
 ### Opening the chat
 
@@ -101,7 +101,7 @@ The chat window will open and you will be able to chat in the `#general` and the
 
 You may see an error message at the bottom of the chat UI:
 
-<img src="https://github.com/distributeaid/chat-ui/releases/download/v1.17.1//Image_URL.png" width=350 alt="Error on first login" />
+<img src="./docs/Image_URL.png" width=350 alt="Error on first login" />
 
 This is known and on the todo list, simply reload the page and the error should
 go away.
@@ -113,30 +113,30 @@ send icon. Markdown is supported.
 
 You can delete messages by clicking the delete icon.
 
-![Writing chat messages](https://github.com/distributeaid/chat-ui/releases/download/v1.17.1//vokoscreenNG-2020-02-09_17-17-37.webm)
+![Writing chat messages](./docs/vokoscreenNG-2020-02-09_17-17-37.webm)
 
 ### Switching channels
 
 Click on the top bars to switch between your channels:
 
-![Switching channels](https://github.com/distributeaid/chat-ui/releases/download/v1.17.1//vokoscreenNG-2020-02-09_17-07-38.webm)
+![Switching channels](./docs/vokoscreenNG-2020-02-09_17-07-38.webm)
 
 ### Leave a channel
 
 Click the close icon to leave a channel. For now, the channel will be restored
 on the next page reload. You cannot leave the last remaining channel.
 
-![Leave a channel](https://github.com/distributeaid/chat-ui/releases/download/v1.17.1//vokoscreenNG-2020-02-09_17-10-17.webm)
+![Leave a channel](./docs/vokoscreenNG-2020-02-09_17-10-17.webm)
 
 ### Minimize Chat
 
 Click the minimize icon to minimize the chat UI:
 
-![Minimize Chat](https://github.com/distributeaid/chat-ui/releases/download/v1.17.1//vokoscreenNG-2020-02-09_17-11-09.webm)
+![Minimize Chat](./docs/vokoscreenNG-2020-02-09_17-11-09.webm)
 
 ### Slash Commands
 
 The chat supports slash commands which you run by typing `/` and a command. Try
 `/help`, it will list all available commands.
 
-![Slash Commands](https://github.com/distributeaid/chat-ui/releases/download/v1.17.1//vokoscreenNG-2020-02-09_17-15-19.webm)
+![Slash Commands](./docs/vokoscreenNG-2020-02-09_17-15-19.webm)
