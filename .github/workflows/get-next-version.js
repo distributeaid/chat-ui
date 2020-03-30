@@ -13,10 +13,11 @@ const main = async () => {
 	const result = await semanticRelease(
 		{
 			// Core options
-			branch: pjson.release.branch,
+			branch: pjson.release.branches[0],
 			repositoryUrl: pjson.repository.url,
 			plugins: ['@semantic-release/commit-analyzer'],
 			dryRun: true,
+			ci: false,
 		},
 		{
 			cwd: process.cwd(),
