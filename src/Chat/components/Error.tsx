@@ -18,6 +18,10 @@ export const Error = ({ type, message }: ErrorInfo) => (
 	<Header>
 		<Text>
 			<strong>{type}:</strong> {message}
+			<br />
+			<small>
+				UI version: <code>{GLOBAL_VERSION}</code>
+			</small>
 		</Text>
 	</Header>
 )

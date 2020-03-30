@@ -60,7 +60,10 @@ export const DevNotice = ({ onClosed }: { onClosed: () => void }) => (
 		>
 			GitHub
 		</a>
-		.
+		.<br />
+		<small>
+			Version: <code>{GLOBAL_VERSION}</code>
+		</small>
 		<UIButton
 			type="button"
 			onClick={() => {

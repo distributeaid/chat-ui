@@ -1,6 +1,15 @@
 const fs = require('fs')
 const path = require('path')
 const Handlebars = require('handlebars')
+const webpack = require('webpack')
+
+let v = 'unknown'
+try {
+	v = fs.readFileSync(path.join(process.cwd(), '.version')).trim()
+} catch {
+	v = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json')))
+		.version
+}
 
 const cfg = {
 	entry: {
@@ -41,6 +50,11 @@ module.exports = [
 		...cfg,
 		mode: 'production',
 		name: 'production',
+		plugins: [
+			new webpack.DefinePlugin({
+				GLOBAL_VERSION: JSON.stringify(v),
+			}),
+		],
 	},
 	{
 		...cfg,
@@ -71,5 +85,10 @@ module.exports = [
 				},
 			],
 		},
+		plugins: [
+			new webpack.DefinePlugin({
+				GLOBAL_VERSION: JSON.stringify(v),
+			}),
+		],
 	},
 ]

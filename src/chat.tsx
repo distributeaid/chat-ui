@@ -35,6 +35,7 @@ export const chat = ({
 
 	const deviceId = v4()
 
+	log('Version:', GLOBAL_VERSION)
 	log({ apiEndpoint, apiKey, deviceId, token })
 
 	ReactDOM.render(
