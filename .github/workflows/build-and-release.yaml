@@ -2,6 +2,11 @@ name: Build and Release
 
 on: push
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GRAPHQL_API_ENDPOINT: ${{ secrets.GRAPHQL_API_ENDPOINT }}
+  GRAPHQL_API_KEY: ${{ secrets.GRAPHQL_API_KEY }}
+
 jobs:
   main:
     runs-on: ubuntu-latest
@@ -12,8 +17,7 @@ jobs:
         with:
           node-version: "12.x"
       - name: Authenticate with NPM
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
         run: |
           echo "//npm.pkg.github.com/:_authToken=$GITHUB_TOKEN" > ~/.npmrc
       - name: Keep npm cache around to speed up installs
@@ -33,15 +37,10 @@ jobs:
           cat .version
       - name: Build
         run: npm run build
-        env:
-          GRAPHQL_API_ENDPOINT: ${{ secrets.GRAPHQL_API_ENDPOINT }}
-          GRAPHQL_API_KEY: ${{ secrets.GRAPHQL_API_KEY }}
       - name: Lint
         run: npm run lint
       - name: Publish latest release to GitHub pages
         if: contains(github.ref, 'saga')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "machine github.com login authtoken password ${GITHUB_TOKEN}" > ~/.netrc
           git config --global user.email "actions@example.com"
@@ -55,8 +54,6 @@ jobs:
           git push -f origin HEAD:gh-pages
       - name: Semantic release
         continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm i --no-save semantic-release
           npx semantic-release
