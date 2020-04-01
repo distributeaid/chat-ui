@@ -7,8 +7,9 @@ import { Channel } from 'twilio-chat/lib/channel'
 import { Client } from 'twilio-chat'
 import { ChatWidget } from '../components/ChatWidget'
 import { DevNotice, DevNoticeToggle } from '../components/Notice'
-import { connectToChannel, ErrorInfo } from './api'
+import { connectToChannel, ErrorInfo, Connection } from './api'
 import { isLeft } from 'fp-ts/lib/Either'
+import { retry } from './retry'
 
 export const TwilioChat = ({
 	context,
@@ -38,13 +39,20 @@ export const TwilioChat = ({
 		setSelectedChannel(context)
 		setConnectedChannel(undefined)
 		setJoinedChannels([...new Set([...joinedChannels, context])])
-		return connectToChannel({
-			apollo,
-			context,
-			deviceId,
-			token,
-		}).then(maybeConnection => {
+		return retry<Connection>(3, numTry =>
+			console.debug(`Retry ${numTry} to connect to channel ${context}...`),
+		)(async () =>
+			connectToChannel({
+				apollo,
+				context,
+				deviceId,
+				token,
+			}),
+		).then(maybeConnection => {
 			if (isLeft(maybeConnection)) {
+				console.error({
+					connectError: maybeConnection,
+				})
 				setError(maybeConnection.left)
 			} else {
 				setConnectedChannel(maybeConnection.right)

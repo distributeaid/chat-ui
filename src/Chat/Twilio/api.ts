@@ -154,6 +154,7 @@ export const authenticateClient = ({
 		),
 	)
 
+export type Connection = { client: Client; channel: Channel; token: string }
 export const connectToChannel = async ({
 	apollo,
 	context,
@@ -164,10 +165,7 @@ export const connectToChannel = async ({
 	deviceId: string
 	token: string
 	apollo: ApolloClient<NormalizedCacheObject>
-}): Promise<Either<
-	ErrorInfo,
-	{ client: Client; channel: Channel; token: string }
->> =>
+}): Promise<Either<ErrorInfo, Connection>> =>
 	pipe(
 		authenticateClient({ apollo, deviceId, token }),
 		chain(({ client, token }) =>
