@@ -163,6 +163,33 @@ export const ChannelView = ({
 		}
 	}
 
+	const subscribeToUser = (identity: string) => {
+		if (!authorNicks[identity]) {
+			channelConnection?.client
+				.getUserDescriptor(identity)
+				.then(async d => {
+					const user = await d.subscribe()
+					console.log('Subscribed to user', user.identity)
+					user.on('updated', userChangedNickHandler)
+					setAuthorNicks(previous => ({
+						...previous,
+						[identity]: d.friendlyName,
+					}))
+					setAuthorSubscriptions(previous => ({
+						...previous,
+						[identity]: user,
+					}))
+				})
+				.catch(err => {
+					console.error(err)
+				})
+		}
+	}
+
+	useEffect(() => {
+		if (channelConnection) subscribeToUser(identity)
+	}, [identity, channelConnection])
+
 	const newMessageHandler = (message: Message) => {
 		updateMessages(prevMessages => ({
 			...prevMessages,
@@ -171,25 +198,7 @@ export const ChannelView = ({
 				? prevMessages.lastIndex
 				: message.index,
 		}))
-		if (!authorNicks[message.author]) {
-			channelConnection?.client
-				.getUserDescriptor(message.author)
-				.then(async d => {
-					const user = await d.subscribe()
-					user.on('updated', userChangedNickHandler)
-					setAuthorNicks(previous => ({
-						...previous,
-						[message.author]: d.friendlyName,
-					}))
-					setAuthorSubscriptions(previous => ({
-						...previous,
-						[message.author]: user,
-					}))
-				})
-				.catch(err => {
-					console.error(err)
-				})
-		}
+		subscribeToUser(message.author)
 	}
 
 	const messageRemovedHandler = (message: Message) => {
@@ -323,7 +332,10 @@ export const ChannelView = ({
 			)
 			.then(async newAuthorSubscriptions => {
 				const subs = newAuthorSubscriptions.reduce((authors, user) => {
-					user.on('updated', userChangedNickHandler)
+					if (user.identity !== identity) {
+						console.log('Subscribed to user', user.identity)
+						user.on('updated', userChangedNickHandler)
+					}
 					return {
 						...authors,
 						[user.identity]: user,
