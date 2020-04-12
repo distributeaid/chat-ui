@@ -5,7 +5,10 @@ const webpack = require('webpack')
 
 let v = 'unknown'
 try {
-	v = fs.readFileSync(path.join(process.cwd(), '.version')).trim()
+	v = fs
+		.readFileSync(path.join(process.cwd(), '.version'))
+		.toString()
+		.trim()
 } catch {
 	v = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json')))
 		.version
