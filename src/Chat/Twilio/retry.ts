@@ -1,10 +1,10 @@
 import { Either, isRight, left } from 'fp-ts/lib/Either'
 import { ErrorInfo } from './api'
 
-const backoff = <R, T extends () => Promise<Either<ErrorInfo, R>>>(
+const backoff = (
 	times: number,
-	fn: T,
-	resolve: (value: Either<ErrorInfo, R>) => void,
+	fn: () => Promise<Either<any, any>>,
+	resolve: (value: any) => void,
 	reject: (error: Error) => void,
 	onRetry?: (numTry: number) => void,
 	numTry = 1,
@@ -30,10 +30,19 @@ const backoff = <R, T extends () => Promise<Either<ErrorInfo, R>>>(
 		.catch(reject)
 }
 
-export const retry = <R>(
-	times: number,
-	onRetry?: (numTry: number) => void,
-) => async (fn: () => Promise<Either<ErrorInfo, R>>) =>
-	new Promise<Either<ErrorInfo, R>>((resolve, reject) =>
-		backoff(times, fn, resolve, reject, onRetry),
-	)
+type RetriedAsyncFunction<R, T extends () => Promise<Either<ErrorInfo, R>>> = (
+	fn: T,
+) => Promise<Either<ErrorInfo, R>>
+type BoundRetry<
+	F extends () => Promise<Either<any, any>>
+> = F extends RetriedAsyncFunction<infer R, any>
+	? Promise<Either<ErrorInfo, R>>
+	: never
+export const retry = (numTries: number, onRetry?: (numTry: number) => void) => <
+	F extends () => Promise<Either<any, any>>
+>(
+	fn: F,
+): BoundRetry<F> =>
+	(new Promise((resolve, reject) =>
+		backoff(numTries, fn, resolve, reject, onRetry),
+	) as any) as BoundRetry<F>
