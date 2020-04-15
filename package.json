@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/distributeaid/chat-ui#readme",
   "devDependencies": {
-    "@bifravst/code-style": "^7.0.5",
+    "@bifravst/code-style": "^7.1.1",
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-angular": "^8.3.4",
     "@semantic-release/commit-analyzer": "^8.0.1",
