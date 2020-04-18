@@ -27,14 +27,23 @@ DAChat({
 [Here is the Toolbox example](https://gitlab.com/distribute-aid/toolbox/-/blob/master/assets/js/chat.js)
 which has a feature flag and lazy loading.
 
-## Configuration
+## Development
+
+> ℹ️ These instructions apply to Unix-based development environments; Linux and
+> Mac users should be fine. Windows users could look into setting up their
+> development environment using
+> [WSL2](https://docs.microsoft.com/en-us/windows/wsl/wsl2-index).
+
+### Configuration
+
+> ℹ️ Linux users can use [direnv](https://direnv.net/) to simplify the process.
 
 Provide the integration API's settings in the environment variables:
 
     export GRAPHQL_API_ENDPOINT=https://xxx.appsync-api.yyy.amazonaws.com/graphql
     export GRAPHQL_API_KEY=xxx-yyy
 
-## Development
+### Running the development server
 
 Start the development server
 
