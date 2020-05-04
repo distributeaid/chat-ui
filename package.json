@@ -7,7 +7,8 @@
     "start": "webpack-dev-server --config-name development --open",
     "lint": "eslint --ext .js,.ts,.tsx src/**",
     "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "prepare": "npm run snyk-protect",
+    "postinstall": "check-node-version --package"
   },
   "keywords": [
     "Distribute Aid",
@@ -35,6 +36,7 @@
     "@types/styled-components": "^5.0.1",
     "@types/twemoji": "^12.1.0",
     "@types/uuid": "^7.0.2",
+    "check-node-version": "^4.0.3",
     "eslint-plugin-react": "^7.19.0",
     "handlebars": "^4.7.6",
     "husky": "^4.2.5",
@@ -112,7 +114,7 @@
     "package-lock.json"
   ],
   "engines": {
-    "node": ">=12.0.0",
+    "node": ">=14.0.0",
     "npm": ">=6.0.0"
   },
   "snyk": true
