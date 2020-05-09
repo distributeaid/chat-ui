@@ -7,8 +7,5 @@
 		"react": {
 			"version": "latest"
 		}
-	},
-	"rules": {
-		"@typescript-eslint/indent": "warn"
 	}
 }
