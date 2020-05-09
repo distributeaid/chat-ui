@@ -56,7 +56,7 @@
       defer
     ></script>
     <script type="text/javascript">
-      const launchChat = token =>
+      const launchChat = (token) =>
         DAChat({
           context: document
             .querySelector("meta[name='chat:context']")
@@ -67,13 +67,13 @@
           apiEndpoint: document
             .querySelector("meta[name='chat:endpoint']")
             .getAttribute("content"),
-          token
+          token,
         });
 
-      const loadJsAsync = deps =>
+      const loadJsAsync = (deps) =>
         loadjs(deps, {
           async: false,
-          returnPromise: true
+          returnPromise: true,
         });
 
       const loadChat = async () =>
@@ -81,13 +81,13 @@
           "https://unpkg.com/react@16/umd/react.development.js",
           "https://unpkg.com/react-dom@16/umd/react-dom.development.js",
           "https://media.twiliocdn.com/sdk/js/chat/v3.3/twilio-chat.min.js",
-          "https://twemoji.maxcdn.com/v/latest/twemoji.min.js"
+          "https://twemoji.maxcdn.com/v/latest/twemoji.min.js",
         ])
           .then(() => loadJsAsync(["./main.js", "./demo.js"]))
           .then(() => {
             ReactDOM.render(
               React.createElement(TokenForm, {
-                onToken: token => launchChat(token)
+                onToken: (token) => launchChat(token),
               }),
               document.querySelector("#tokenform")
             );
@@ -98,7 +98,7 @@
           if (
             document.cookie
               .split(";")
-              .filter(item => item.trim().startsWith("DAChatopen=")).length
+              .filter((item) => item.trim().startsWith("DAChatopen=")).length
           ) {
             loadChat();
           } else {

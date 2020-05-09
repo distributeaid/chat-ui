@@ -10,7 +10,7 @@ const backoff = (
 	numTry = 1,
 ): void => {
 	fn()
-		.then(e => {
+		.then((e) => {
 			if (isRight(e)) {
 				return resolve(e)
 			}

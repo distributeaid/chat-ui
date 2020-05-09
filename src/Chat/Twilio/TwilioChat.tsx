@@ -39,7 +39,7 @@ export const TwilioChat = ({
 		setSelectedChannel(context)
 		setConnectedChannel(undefined)
 		setJoinedChannels([...new Set([...joinedChannels, context])])
-		return retry(3, numTry =>
+		return retry(3, (numTry) =>
 			console.debug(`Retry ${numTry} to connect to channel ${context}...`),
 		)(async () =>
 			connectToChannel({
@@ -48,7 +48,7 @@ export const TwilioChat = ({
 				deviceId,
 				token,
 			}),
-		).then(maybeConnection => {
+		).then((maybeConnection) => {
 			if (isLeft(maybeConnection)) {
 				console.error({
 					connectError: maybeConnection,
@@ -61,7 +61,7 @@ export const TwilioChat = ({
 	}
 
 	useEffect(() => {
-		connect(context).catch(error => {
+		connect(context).catch((error) => {
 			setError({
 				type: 'InternalError',
 				message: error.message,
@@ -87,16 +87,16 @@ export const TwilioChat = ({
 				apollo={apollo}
 				token={token}
 				joinedChannels={joinedChannels}
-				onSwitchChannel={channel => {
+				onSwitchChannel={(channel) => {
 					console.log(`Switching channel ...`, channel)
-					connect(channel).catch(error => {
+					connect(channel).catch((error) => {
 						setError({
 							type: 'InternalError',
 							message: error.message,
 						})
 					})
 				}}
-				onChangeNick={nick => {
+				onChangeNick={(nick) => {
 					console.log(`Changing nick ...`, nick)
 					if (channelConnection) {
 						channelConnection.client.user
@@ -104,7 +104,7 @@ export const TwilioChat = ({
 							.then(() => {
 								console.log(`Updated nick to ${nick}.`)
 							})
-							.catch(error => {
+							.catch((error) => {
 								setError({
 									type: 'InternalError',
 									message: error.message,
@@ -112,16 +112,16 @@ export const TwilioChat = ({
 							})
 					}
 				}}
-				onCloseChannel={channel => {
-					setJoinedChannels(joinedChannels.filter(c => c !== channel))
+				onCloseChannel={(channel) => {
+					setJoinedChannels(joinedChannels.filter((c) => c !== channel))
 				}}
 				headerExtras={
 					<>
 						<DevNoticeToggle
 							style={{ opacity: devNoteClosed ? 1 : 0.5 }}
-							onClick={e => {
+							onClick={(e) => {
 								e.stopPropagation()
-								setDevNoteClosed(closed => {
+								setDevNoteClosed((closed) => {
 									window.localStorage.setItem(
 										'dachat:devnote:closed',
 										closed ? '0' : '1',

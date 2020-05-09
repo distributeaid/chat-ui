@@ -25,7 +25,7 @@ export const EnterEmailForNotification = ({
 	return (
 		<Wrapper>
 			<form
-				onSubmit={e => {
+				onSubmit={(e) => {
 					e.preventDefault()
 				}}
 			>

@@ -37,7 +37,7 @@ export const SubscribeToChannel = ({
 			{subscribed && email && !verified && (
 				<EnterConfirmationCode
 					email={email}
-					onCode={code => {
+					onCode={(code) => {
 						console.log(code)
 						setConfirming(true)
 						pipe(
@@ -46,7 +46,7 @@ export const SubscribeToChannel = ({
 								email,
 								code,
 							}),
-							TE.map(verified => {
+							TE.map((verified) => {
 								setConfirming(false)
 								if (verified) {
 									setVerified(verified)
@@ -66,7 +66,7 @@ export const SubscribeToChannel = ({
 			{!subscribed && !subscribing && (
 				<EnterEmailForNotification
 					channel={channel}
-					onEmail={email => {
+					onEmail={(email) => {
 						setEmail(email)
 						setSubscribing(true)
 						pipe(

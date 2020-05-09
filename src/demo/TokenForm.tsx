@@ -47,7 +47,7 @@ export const TokenForm = ({
 	const parsedToken = parseToken(token)
 
 	return (
-		<form onSubmit={e => e.preventDefault()}>
+		<form onSubmit={(e) => e.preventDefault()}>
 			<fieldset>
 				<legend>Token</legend>
 				<p>Enter a token here and click apply.</p>

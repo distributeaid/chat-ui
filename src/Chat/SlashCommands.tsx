@@ -46,7 +46,7 @@ export const SlashCommandHandler = ({
 	token: string
 }) => (cmd: SlashCommand, arg?: string) => {
 	const showMessage = (message: string | React.ReactNode) =>
-		updateMessages(prevMessages => ({
+		updateMessages((prevMessages) => ({
 			...prevMessages,
 			messages: [
 				...prevMessages.messages,
@@ -103,7 +103,7 @@ export const SlashCommandHandler = ({
 					}
 					onSwitchChannel(arg)
 				}),
-				TE.mapLeft(err => {
+				TE.mapLeft((err) => {
 					showMessage(`Failed to verify token: ${err.message}`)
 				}),
 			)().catch(logError)
@@ -121,7 +121,7 @@ export const SlashCommandHandler = ({
 						)}.`,
 					)
 				}),
-				TE.mapLeft(err => {
+				TE.mapLeft((err) => {
 					showMessage(`Failed to verify token: ${err.message}`)
 				}),
 			)().catch(logError)

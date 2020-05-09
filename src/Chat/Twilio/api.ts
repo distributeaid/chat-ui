@@ -58,7 +58,7 @@ const createChatToken = ({
 					}
 					return data.createChatToken
 				}),
-		reason => ({
+		(reason) => ({
 			type: 'IntegrationError',
 			message: `Creating chat token failed: ${(reason as Error).message}`,
 		}),
@@ -86,7 +86,7 @@ export const verifyToken = ({
 						return { identity, contexts }
 					}
 				}),
-		reason => ({
+		(reason) => ({
 			type: 'TokenError',
 			message: `Failed to verify token: ${(reason as Error).message}`,
 		}),
@@ -95,7 +95,7 @@ export const verifyToken = ({
 const createClient = (chatToken: string) =>
 	tryCatch<ErrorInfo, Client>(
 		async () => Client.create(chatToken),
-		reason => ({
+		(reason) => ({
 			type: 'IntegrationError',
 			message: `Creating chat client failed: ${(reason as Error).message}`,
 		}),
@@ -104,7 +104,7 @@ const createClient = (chatToken: string) =>
 const fetchSubscribedChannels = (client: Client) =>
 	tryCatch<ErrorInfo, Paginator<Channel>>(
 		async () => client.getSubscribedChannels(),
-		reason => ({
+		(reason) => ({
 			type: 'IntegrationError',
 			message: `Failed to fetch subscribed channels: ${
 				(reason as Error).message
@@ -121,8 +121,8 @@ const joinChannel = ({
 }) => () =>
 	tryCatch<ErrorInfo, Channel>(
 		async () =>
-			client.getChannelByUniqueName(channel).then(async c => c.join()),
-		reason => ({
+			client.getChannelByUniqueName(channel).then(async (c) => c.join()),
+		(reason) => ({
 			type: 'IntegrationError',
 			message: `Failed to join channel "${channel}": ${
 				(reason as Error).message
@@ -146,10 +146,10 @@ export const authenticateClient = ({
 }) =>
 	pipe(
 		createChatToken({ apollo, deviceId, token }),
-		chain(token =>
+		chain((token) =>
 			pipe(
 				createClient(token),
-				TE.map(client => ({ client, token })),
+				TE.map((client) => ({ client, token })),
 			),
 		),
 	)
@@ -173,7 +173,7 @@ export const connectToChannel = async ({
 				fetchSubscribedChannels(client),
 				TE.map(maybeAlreadyJoinedChannel(context)),
 				getOrElse(joinChannel({ client, channel: context })),
-				TE.map(channel => ({ client, channel, token })),
+				TE.map((channel) => ({ client, channel, token })),
 			),
 		),
 	)()
@@ -206,7 +206,7 @@ export const enableChannelNotifications = ({
 						return data.enableChannelNotifications
 					}
 				}),
-		reason => ({
+		(reason) => ({
 			type: 'IntegrationError',
 			message: `Failed to enable channel notifications: ${
 				(reason as Error).message
@@ -237,7 +237,7 @@ export const verifyEmail = ({
 						return data.verifyEmail
 					}
 				}),
-		reason => ({
+		(reason) => ({
 			type: 'IntegrationError',
 			message: `Failed to verify email: ${(reason as Error).message}`,
 		}),

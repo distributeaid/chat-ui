@@ -22,7 +22,7 @@ export const EnterConfirmationCode = ({
 	return (
 		<Wrapper>
 			<form
-				onSubmit={e => {
+				onSubmit={(e) => {
 					e.preventDefault()
 				}}
 			>

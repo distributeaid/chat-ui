@@ -84,7 +84,7 @@ export const ChannelView = ({
 	const [authorNicks, setAuthorNicks] = useState<AuthorNicks>({})
 	useEffect(() => {
 		;() => {
-			Object.values(authorSubscriptions).map(async author =>
+			Object.values(authorSubscriptions).map(async (author) =>
 				author.unsubscribe(),
 			)
 		}
@@ -114,7 +114,7 @@ export const ChannelView = ({
 				onSlashCommand(SlashCommand.JOIN, args[0])
 				break
 			case '/nick':
-				setAuthorNicks(previous => ({
+				setAuthorNicks((previous) => ({
 					...previous,
 					[identity]: args.join(' '),
 				}))
@@ -124,7 +124,7 @@ export const ChannelView = ({
 				if (message.startsWith('/')) {
 					onSlashCommand(SlashCommand.HELP)
 				} else {
-					channelConnection.sendMessage(message).catch(err => {
+					channelConnection.sendMessage(message).catch((err) => {
 						console.error(err)
 						setMessage(message)
 					})
@@ -138,7 +138,7 @@ export const ChannelView = ({
 		user,
 	}: User.UpdatedEventArgs) => {
 		if (updateReasons.includes('friendlyName')) {
-			updateMessages(prevMessages => ({
+			updateMessages((prevMessages) => ({
 				...prevMessages,
 				messages: [
 					...prevMessages.messages,
@@ -156,7 +156,7 @@ export const ChannelView = ({
 					},
 				],
 			}))
-			setAuthorNicks(authorNicks => ({
+			setAuthorNicks((authorNicks) => ({
 				...authorNicks,
 				[user.identity]: user.friendlyName,
 			}))
@@ -167,20 +167,20 @@ export const ChannelView = ({
 		if (!authorNicks[identity]) {
 			channelConnection?.client
 				.getUserDescriptor(identity)
-				.then(async d => {
+				.then(async (d) => {
 					const user = await d.subscribe()
 					console.log('Subscribed to user', user.identity)
 					user.on('updated', userChangedNickHandler)
-					setAuthorNicks(previous => ({
+					setAuthorNicks((previous) => ({
 						...previous,
 						[identity]: d.friendlyName,
 					}))
-					setAuthorSubscriptions(previous => ({
+					setAuthorSubscriptions((previous) => ({
 						...previous,
 						[identity]: user,
 					}))
 				})
-				.catch(err => {
+				.catch((err) => {
 					console.error(err)
 				})
 		}
@@ -191,7 +191,7 @@ export const ChannelView = ({
 	}, [identity, channelConnection])
 
 	const newMessageHandler = (message: Message) => {
-		updateMessages(prevMessages => ({
+		updateMessages((prevMessages) => ({
 			...prevMessages,
 			messages: [...prevMessages.messages, { message }],
 			lastIndex: prevMessages.lastIndex
@@ -202,16 +202,16 @@ export const ChannelView = ({
 	}
 
 	const messageRemovedHandler = (message: Message) => {
-		updateMessages(prevMessages => ({
+		updateMessages((prevMessages) => ({
 			...prevMessages,
 			messages: prevMessages.messages.filter(
-				m => 'status' in m || m.message.sid !== message.sid,
+				(m) => 'status' in m || m.message.sid !== message.sid,
 			),
 		}))
 	}
 
 	const memberJoinedHandler = (member: Member) => {
-		updateMessages(prevMessages => ({
+		updateMessages((prevMessages) => ({
 			...prevMessages,
 			messages: [
 				...prevMessages.messages,
@@ -227,7 +227,7 @@ export const ChannelView = ({
 	}
 
 	const memberLeftHandler = (member: Member) => {
-		updateMessages(prevMessages => ({
+		updateMessages((prevMessages) => ({
 			...prevMessages,
 			messages: [
 				...prevMessages.messages,
@@ -303,34 +303,35 @@ export const ChannelView = ({
 		}
 		channel
 			.getMessages(10, messages.lastIndex && messages.lastIndex - 1)
-			.then(async messages => {
+			.then(async (messages) => {
 				setInitialLoad(false)
-				updateMessages(prevMessages => ({
+				updateMessages((prevMessages) => ({
 					...prevMessages,
 					messages: [
-						...messages.items.map(message => ({ message })),
+						...messages.items.map((message) => ({ message })),
 						...prevMessages.messages,
 					],
 					lastIndex: messages.items[0]?.index ?? undefined,
 				}))
 				return Promise.all(
-					[...new Set(messages.items.map(message => message.author))]
+					[...new Set(messages.items.map((message) => message.author))]
 						.filter(
-							identity => !Object.keys(authorSubscriptions).includes(identity),
+							(identity) =>
+								!Object.keys(authorSubscriptions).includes(identity),
 						)
-						.map(async author =>
+						.map(async (author) =>
 							channelConnection?.client.getUserDescriptor(author),
 						),
 				)
 			})
-			.then(async newAuthorDescriptors =>
+			.then(async (newAuthorDescriptors) =>
 				Promise.all(
 					(newAuthorDescriptors.filter(
-						f => f,
-					) as UserDescriptor[]).map(async a => a.subscribe()),
+						(f) => f,
+					) as UserDescriptor[]).map(async (a) => a.subscribe()),
 				),
 			)
-			.then(async newAuthorSubscriptions => {
+			.then(async (newAuthorSubscriptions) => {
 				const subs = newAuthorSubscriptions.reduce((authors, user) => {
 					if (user.identity !== identity) {
 						console.log('Subscribed to user', user.identity)
@@ -350,7 +351,7 @@ export const ChannelView = ({
 					),
 				})
 			})
-			.catch(err => {
+			.catch((err) => {
 				console.error(err)
 				setInitialLoad(false)
 			})
@@ -365,8 +366,8 @@ export const ChannelView = ({
 	return (
 		<>
 			{joinedChannels
-				.filter(c => c !== selectedChannel)
-				.map(otherChannel => (
+				.filter((c) => c !== selectedChannel)
+				.map((otherChannel) => (
 					<OtherChannelHeader
 						key={otherChannel}
 						onClick={() => {
@@ -379,7 +380,7 @@ export const ChannelView = ({
 						<Controls>
 							<UIButton
 								title={'Close channel'}
-								onClick={e => {
+								onClick={(e) => {
 									e.stopPropagation()
 									onCloseChannel(otherChannel)
 								}}
@@ -400,9 +401,9 @@ export const ChannelView = ({
 					{headerExtras}
 					<UIButton
 						title={'Enable offline notifications'}
-						onClick={e => {
+						onClick={(e) => {
 							e.stopPropagation()
-							showNotificationSettings(visible => !visible)
+							showNotificationSettings((visible) => !visible)
 						}}
 					>
 						<AlertIcon />
@@ -430,10 +431,10 @@ export const ChannelView = ({
 					{joinedChannels.length > 1 && (
 						<UIButton
 							title={'Close channel'}
-							onClick={e => {
+							onClick={(e) => {
 								e.stopPropagation()
 								onSwitchChannel(
-									joinedChannels.find(c => c !== selectedChannel) as string,
+									joinedChannels.find((c) => c !== selectedChannel) as string,
 								)
 								onCloseChannel(selectedChannel)
 							}}
