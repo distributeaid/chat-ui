@@ -1,18 +1,8 @@
-const fs = require('fs')
-const path = require('path')
-const Handlebars = require('handlebars')
 const webpack = require('webpack')
+const { html, getVersion } = require('./scripts/html')
+const gitHubUrl = require('./package.json').homepage
 
-let v = 'unknown'
-try {
-	v = fs
-		.readFileSync(path.join(process.cwd(), '.version'))
-		.toString()
-		.trim()
-} catch {
-	v = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json')))
-		.version
-}
+const VERSION = getVersion()
 
 const cfg = {
 	entry: {
@@ -55,7 +45,9 @@ module.exports = [
 		name: 'production',
 		plugins: [
 			new webpack.DefinePlugin({
-				GLOBAL_VERSION: JSON.stringify(v),
+				GLOBAL_IS_PRODUCTION: JSON.stringify(true),
+				GLOBAL_VERSION: JSON.stringify(VERSION),
+				GLOBAL_GITHUB_URL: JSON.stringify(gitHubUrl),
 			}),
 		],
 	},
@@ -68,13 +60,15 @@ module.exports = [
 			contentBase: './web',
 			before: (app, server, compiler) => {
 				app.get('/', (req, res) => {
-					const html = fs.readFileSync(
-						path.join(process.cwd(), 'web', 'index.html'),
-						'utf-8',
-					)
-					const tpl = Handlebars.compile(html)
 					res.set('Content-Type', 'text/html')
-					res.send(tpl(process.env))
+					res.send(
+						html({
+							GRAPHQL_API_ENDPOINT: process.env.GRAPHQL_API_ENDPOINT,
+							GRAPHQL_API_KEY: process.env.GRAPHQL_API_KEY,
+							VERSION,
+							IS_PRODUCTION: JSON.stringify(false),
+						}),
+					)
 				})
 			},
 		},
@@ -90,7 +84,9 @@ module.exports = [
 		},
 		plugins: [
 			new webpack.DefinePlugin({
-				GLOBAL_VERSION: JSON.stringify(v),
+				GLOBAL_IS_PRODUCTION: JSON.stringify(false),
+				GLOBAL_VERSION: JSON.stringify(VERSION),
+				GLOBAL_GITHUB_URL: JSON.stringify(gitHubUrl),
 			}),
 		],
 	},

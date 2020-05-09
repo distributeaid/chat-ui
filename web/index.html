@@ -6,6 +6,8 @@
     <meta name="chat:context" content="general" />
     <meta name="chat:endpoint" content="{{GRAPHQL_API_ENDPOINT}}" />
     <meta name="chat:apiKey" content="{{GRAPHQL_API_KEY}}" />
+    <meta name="isProduction" content="{{IS_PRODUCTION}}" />
+    <meta name="version" content="{{VERSION}}" />
     <link
       href="https://fonts.googleapis.com/css?family=Quicksand&display=swap"
       rel="stylesheet"
@@ -100,8 +102,8 @@
           ) {
             loadChat();
           } else {
-            loadJsAsync(["./chatbutton.js"]).then(() => {
-              DAChatButton(removeButton => {
+            loadJsAsync(["{{SITE_DIR}}/chatbutton.js?{{VERSION}}"]).then(() => {
+              DAChatButton((removeButton) => {
                 document.cookie = "DAChatopen=1";
                 loadChat().then(() => {
                   removeButton();

@@ -36,6 +36,8 @@ export const chat = ({
 	const deviceId = v4()
 
 	log('Version:', GLOBAL_VERSION)
+	log('Production:', GLOBAL_IS_PRODUCTION)
+	log('Source code:', GLOBAL_GITHUB_URL)
 	log({ apiEndpoint, apiKey, deviceId, token })
 
 	ReactDOM.render(
