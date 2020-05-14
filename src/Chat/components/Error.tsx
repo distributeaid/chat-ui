@@ -27,24 +27,23 @@ const Text = styled.div`
 export const Error = ({ type, message }: ErrorInfo) => {
 	const [visible, setVisible] = useState(true)
 	if (!visible) return null
-	else
-		return (
-			<Header>
-				<Text>
-					<UIButton
-						type="button"
-						onClick={() => {
-							setVisible(false)
-						}}
-					>
-						<CloseIcon />
-					</UIButton>
-					<strong>{type}:</strong> {message}
-					<br />
-					<small>
-						UI version: <code>{GLOBAL_VERSION}</code>
-					</small>
-				</Text>
-			</Header>
-		)
+	return (
+		<Header>
+			<Text>
+				<UIButton
+					type="button"
+					onClick={() => {
+						setVisible(false)
+					}}
+				>
+					<CloseIcon />
+				</UIButton>
+				<strong>{type}:</strong> {message}
+				<br />
+				<small>
+					UI version: <code>{GLOBAL_VERSION}</code>
+				</small>
+			</Text>
+		</Header>
+	)
 }
