@@ -1,23 +1,9 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { UIButton } from './ChannelView'
+import { ClosableNote } from './ClosableNote'
 
-import CloseIcon from 'feather-icons/dist/icons/x-square.svg'
 import HelpIcon from 'feather-icons/dist/icons/help-circle.svg'
-
-const Notice = styled.div`
-	background-color: #ffec8e;
-	padding: 0.5rem;
-	color: #000000cc;
-	position: relative;
-	padding-right: 30px;
-	button {
-		position: absolute;
-		top: 0.25rem;
-		right: 0.25rem;
-		opacity: 0.75;
-	}
-`
 
 const NoticeIcon = styled(HelpIcon)`
 	color: #ffec8e;
@@ -32,7 +18,7 @@ export const DevNoticeToggle = (
 )
 
 export const DevNotice = ({ onClosed }: { onClosed: () => void }) => (
-	<Notice>
+	<ClosableNote onClosed={onClosed}>
 		This is a <strong>development preview</strong> of the chat.
 		<br />
 		Please provide your feedback in the{' '}
@@ -60,17 +46,6 @@ export const DevNotice = ({ onClosed }: { onClosed: () => void }) => (
 		>
 			GitHub
 		</a>
-		.<br />
-		<small>
-			Version: <code>{GLOBAL_VERSION}</code>
-		</small>
-		<UIButton
-			type="button"
-			onClick={() => {
-				onClosed()
-			}}
-		>
-			<CloseIcon />
-		</UIButton>
-	</Notice>
+		.
+	</ClosableNote>
 )
