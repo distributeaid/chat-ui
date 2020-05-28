@@ -77,7 +77,7 @@
     "react-feather": "^2.0.8",
     "showdown": "^1.9.1",
     "snyk": "^1.327.0",
-    "styled-components": "^5.1.0",
+    "styled-components": "^5.1.1",
     "uuid": "^8.1.0"
   },
   "release": {
