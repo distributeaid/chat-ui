@@ -147,7 +147,7 @@ export const ChannelView = ({
 						status: {
 							message: (
 								<>
-									User <em>{authorNicks[user.identity] || user.identity}</em>{' '}
+									User <em>{authorNicks[user.identity] ?? user.identity}</em>{' '}
 									changed their name to <em>{user.friendlyName}</em>.
 								</>
 							),
@@ -164,7 +164,7 @@ export const ChannelView = ({
 	}
 
 	const subscribeToUser = (identity: string) => {
-		if (!authorNicks[identity]) {
+		if (authorNicks[identity] === undefined) {
 			channelConnection?.client
 				.getUserDescriptor(identity)
 				.then(async (d) => {
@@ -194,9 +194,7 @@ export const ChannelView = ({
 		updateMessages((prevMessages) => ({
 			...prevMessages,
 			messages: [...prevMessages.messages, { message }],
-			lastIndex: prevMessages.lastIndex
-				? prevMessages.lastIndex
-				: message.index,
+			lastIndex: prevMessages.lastIndex ?? message.index,
 		}))
 		subscribeToUser(message.author)
 	}
@@ -302,7 +300,10 @@ export const ChannelView = ({
 			setScrollTo('beginning')
 		}
 		channel
-			.getMessages(10, messages.lastIndex && messages.lastIndex - 1)
+			.getMessages(
+				10,
+				messages.lastIndex !== undefined ? messages.lastIndex - 1 : undefined,
+			)
 			.then(async (messages) => {
 				setInitialLoad(false)
 				updateMessages((prevMessages) => ({

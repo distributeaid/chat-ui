@@ -147,7 +147,7 @@ export const MessageItem = ({
 	onRendered: () => void
 	onDelete: () => void
 }) => {
-	const V = fromUser ? UserMessageView : MessageView
+	const V = fromUser === true ? UserMessageView : MessageView
 
 	useLayoutEffect(() => {
 		onRendered()
@@ -157,11 +157,11 @@ export const MessageItem = ({
 
 	return (
 		<V>
-			<From style={userColorStyle}>{emojify(nick || from)}</From>
+			<From style={userColorStyle}>{emojify(nick ?? from)}</From>
 			<Text style={userColorStyle}>{markdownify(message)}</Text>
 			<Meta style={userColorStyle}>
 				<Timestamp from={timestamp} />
-				{fromUser && (
+				{fromUser === true && (
 					<UIButton onClick={onDelete}>
 						<DeleteIcon />
 					</UIButton>

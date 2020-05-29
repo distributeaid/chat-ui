@@ -16,7 +16,13 @@ const parseToken = (token: string) => {
 	}
 }
 
-const Token = ({ header, payload }: { header: object; payload: object }) => (
+const Token = ({
+	header,
+	payload,
+}: {
+	header: { [key: string]: any }
+	payload: { [key: string]: any }
+}) => (
 	<>
 		<pre>{JSON.stringify(header, null, 2)}</pre>
 		<pre>{JSON.stringify(payload, null, 2)}</pre>
@@ -29,7 +35,7 @@ export const TokenForm = ({
 	onToken: (token: string) => void
 }) => {
 	const [token, updateToken] = React.useState(
-		window.localStorage.getItem('token') || '',
+		window.localStorage.getItem('token') ?? '',
 	)
 	const [hasChat, setHasChat] = React.useState(false)
 	const memoToken = (token: string) => {

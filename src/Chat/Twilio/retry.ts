@@ -23,7 +23,7 @@ const backoff = (
 				)
 			}
 			setTimeout(() => {
-				onRetry && onRetry(numTry + 1)
+				onRetry?.(numTry + 1)
 				backoff(times, fn, resolve, reject, onRetry, numTry + 1)
 			}, 1000)
 		})

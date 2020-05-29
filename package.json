@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/distributeaid/chat-ui#readme",
   "devDependencies": {
-    "@bifravst/code-style": "^7.1.11",
+    "@bifravst/code-style": "^8.0.0",
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-angular": "^8.3.4",
     "@semantic-release/commit-analyzer": "^8.0.1",
@@ -41,10 +41,10 @@
     "handlebars": "^4.7.6",
     "husky": "^4.2.5",
     "semantic-release": "^17.0.8",
-    "source-map-loader": "^0.2.4",
+    "source-map-loader": "^1.0.0",
     "stream-buffers": "^3.0.2",
     "ts-loader": "^7.0.5",
-    "twilio-chat": "^3.3.7",
+    "twilio-chat": "^3.4.0",
     "typescript": "^3.9.3",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
@@ -68,7 +68,7 @@
   "dependencies": {
     "@apollo/client": "^3.0.0-beta.20",
     "feather-icons": "^4.28.0",
-    "fp-ts": "^2.6.1",
+    "fp-ts": "^2.6.2",
     "graphql": "^15.0.0",
     "graphql-tag": "^2.10.3",
     "react": "^16.13.1",
@@ -76,8 +76,8 @@
     "react-dom": "^16.13.1",
     "react-feather": "^2.0.8",
     "showdown": "^1.9.1",
-    "snyk": "^1.327.0",
-    "styled-components": "^5.1.0",
+    "snyk": "^1.332.0",
+    "styled-components": "^5.1.1",
     "uuid": "^8.1.0"
   },
   "release": {

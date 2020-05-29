@@ -20,7 +20,7 @@ export const EnterEmailForNotification = ({
 	onEmail: (email: string) => void
 }) => {
 	const [email, setEmail] = useState(
-		window.localStorage.getItem('dachat:notification:email') || '',
+		window.localStorage.getItem('dachat:notification:email') ?? '',
 	)
 	return (
 		<Wrapper>

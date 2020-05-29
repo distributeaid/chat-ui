@@ -51,7 +51,7 @@ const createChatToken = ({
 					variables: { deviceId, token },
 				})
 				.then(({ data }) => {
-					if (!data) {
+					if (data === undefined) {
 						throw new Error(
 							'Creating chat token failed! (No response returned.)',
 						)
@@ -70,7 +70,7 @@ export const verifyToken = ({
 }: {
 	token: string
 	apollo: ApolloClient<NormalizedCacheObject>
-}) =>
+}): TE.TaskEither<ErrorInfo, { identity: string; contexts: string[] }> =>
 	tryCatch<ErrorInfo, { identity: string; contexts: string[] }>(
 		async () =>
 			apollo
@@ -79,7 +79,7 @@ export const verifyToken = ({
 					variables: { token },
 				})
 				.then(({ data }) => {
-					if (!data) {
+					if (data === undefined) {
 						throw new Error('No response received!')
 					} else {
 						const { identity, contexts } = data.verifyToken
@@ -92,7 +92,7 @@ export const verifyToken = ({
 		}),
 	)
 
-const createClient = (chatToken: string) =>
+const createClient = (chatToken: string): TE.TaskEither<ErrorInfo, Client> =>
 	tryCatch<ErrorInfo, Client>(
 		async () => Client.create(chatToken),
 		(reason) => ({
@@ -101,7 +101,9 @@ const createClient = (chatToken: string) =>
 		}),
 	)
 
-const fetchSubscribedChannels = (client: Client) =>
+const fetchSubscribedChannels = (
+	client: Client,
+): TE.TaskEither<ErrorInfo, Paginator<Channel>> =>
 	tryCatch<ErrorInfo, Paginator<Channel>>(
 		async () => client.getSubscribedChannels(),
 		(reason) => ({
@@ -118,7 +120,7 @@ const joinChannel = ({
 }: {
 	client: Client
 	channel: string
-}) => () =>
+}) => (): TE.TaskEither<ErrorInfo, Channel> =>
 	tryCatch<ErrorInfo, Channel>(
 		async () =>
 			client.getChannelByUniqueName(channel).then(async (c) => c.join()),
@@ -143,7 +145,7 @@ export const authenticateClient = ({
 	deviceId: string
 	token: string
 	apollo: ApolloClient<NormalizedCacheObject>
-}) =>
+}): TE.TaskEither<ErrorInfo, { client: Client; token: string }> =>
 	pipe(
 		createChatToken({ apollo, deviceId, token }),
 		chain((token) =>
@@ -188,7 +190,7 @@ export const enableChannelNotifications = ({
 	channel: string
 	email: string
 	apollo: ApolloClient<NormalizedCacheObject>
-}) =>
+}): TE.TaskEither<ErrorInfo, { emailVerified: boolean }> =>
 	tryCatch<ErrorInfo, { emailVerified: boolean }>(
 		async () =>
 			apollo
@@ -200,7 +202,7 @@ export const enableChannelNotifications = ({
 					variables: { token, channel, email },
 				})
 				.then(({ data }) => {
-					if (!data) {
+					if (data === undefined) {
 						throw new Error('No response received!')
 					} else {
 						return data.enableChannelNotifications
@@ -222,7 +224,7 @@ export const verifyEmail = ({
 	code: string
 	email: string
 	apollo: ApolloClient<NormalizedCacheObject>
-}) =>
+}): TE.TaskEither<ErrorInfo, boolean> =>
 	tryCatch<ErrorInfo, boolean>(
 		async () =>
 			apollo
@@ -231,7 +233,7 @@ export const verifyEmail = ({
 					variables: { code, email },
 				})
 				.then(({ data }) => {
-					if (!data) {
+					if (data === undefined) {
 						throw new Error('No response received!')
 					} else {
 						return data.verifyEmail
