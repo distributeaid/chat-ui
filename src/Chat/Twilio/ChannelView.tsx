@@ -30,6 +30,7 @@ import MinimizeIcon from 'feather-icons/dist/icons/minimize.svg'
 import MaximizeIcon from 'feather-icons/dist/icons/maximize.svg'
 import SendIcon from 'feather-icons/dist/icons/send.svg'
 import AlertIcon from 'feather-icons/dist/icons/bell.svg'
+import { log, logError } from '../../log'
 
 type AuthorMap = { [key: string]: User }
 type AuthorNicks = { [key: string]: string | undefined }
@@ -125,7 +126,7 @@ export const ChannelView = ({
 					onSlashCommand(SlashCommand.HELP)
 				} else {
 					channelConnection.sendMessage(message).catch((err) => {
-						console.error(err)
+						logError(err)
 						setMessage(message)
 					})
 				}
@@ -169,7 +170,7 @@ export const ChannelView = ({
 				.getUserDescriptor(identity)
 				.then(async (d) => {
 					const user = await d.subscribe()
-					console.log('Subscribed to user', user.identity)
+					log('Subscribed to user', user.identity)
 					user.on('updated', userChangedNickHandler)
 					setAuthorNicks((previous) => ({
 						...previous,
@@ -181,7 +182,7 @@ export const ChannelView = ({
 					}))
 				})
 				.catch((err) => {
-					console.error(err)
+					logError(err)
 				})
 		}
 	}
@@ -335,7 +336,7 @@ export const ChannelView = ({
 			.then(async (newAuthorSubscriptions) => {
 				const subs = newAuthorSubscriptions.reduce((authors, user) => {
 					if (user.identity !== identity) {
-						console.log('Subscribed to user', user.identity)
+						log('Subscribed to user', user.identity)
 						user.on('updated', userChangedNickHandler)
 					}
 					return {
@@ -353,7 +354,7 @@ export const ChannelView = ({
 				})
 			})
 			.catch((err) => {
-				console.error(err)
+				logError(err)
 				setInitialLoad(false)
 			})
 	}
@@ -500,13 +501,13 @@ export const ChannelView = ({
 										}}
 										onDelete={() => {
 											if (confirm('Really delete this message?')) {
-												console.log(`Deleting message ${m.message.sid}`)
+												log(`Deleting message ${m.message.sid}`)
 												m.message
 													.remove()
 													.then(() => {
-														console.log('Removed')
+														log('Removed')
 													})
-													.catch(console.error)
+													.catch(logError)
 											}
 										}}
 									/>

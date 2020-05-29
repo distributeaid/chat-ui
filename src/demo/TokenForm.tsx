@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { logError } from '../log'
 
 const parseToken = (token: string) => {
 	try {
@@ -8,7 +9,7 @@ const parseToken = (token: string) => {
 			payload: JSON.parse(atob(payload)),
 		}
 	} catch (err) {
-		console.error(err)
+		logError(err)
 		return {
 			header: {},
 			payload: {},

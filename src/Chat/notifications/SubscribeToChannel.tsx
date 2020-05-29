@@ -38,7 +38,6 @@ export const SubscribeToChannel = ({
 				<EnterConfirmationCode
 					email={email}
 					onCode={(code) => {
-						console.log(code)
 						setConfirming(true)
 						pipe(
 							verifyEmail({

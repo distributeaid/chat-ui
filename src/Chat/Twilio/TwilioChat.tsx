@@ -10,6 +10,7 @@ import { DevNotice, DevNoticeToggle } from '../components/Notice'
 import { connectToChannel, ErrorInfo } from './api'
 import { isLeft } from 'fp-ts/lib/Either'
 import { retry } from './retry'
+import { log, logError, logDebug } from '../../log'
 
 export const TwilioChat = ({
 	context,
@@ -40,7 +41,7 @@ export const TwilioChat = ({
 		setConnectedChannel(undefined)
 		setJoinedChannels([...new Set([...joinedChannels, context])])
 		return retry(3, (numTry) =>
-			console.debug(`Retry ${numTry} to connect to channel ${context}...`),
+			logDebug(`Retry ${numTry} to connect to channel ${context}...`),
 		)(async () =>
 			connectToChannel({
 				apollo,
@@ -50,7 +51,7 @@ export const TwilioChat = ({
 			}),
 		).then((maybeConnection) => {
 			if (isLeft(maybeConnection)) {
-				console.error({
+				logError({
 					connectError: maybeConnection,
 				})
 				setError(maybeConnection.left)
@@ -88,7 +89,7 @@ export const TwilioChat = ({
 				token={token}
 				joinedChannels={joinedChannels}
 				onSwitchChannel={(channel) => {
-					console.log(`Switching channel ...`, channel)
+					log(`Switching channel ...`, channel)
 					connect(channel).catch((error) => {
 						setError({
 							type: 'InternalError',
@@ -97,12 +98,12 @@ export const TwilioChat = ({
 					})
 				}}
 				onChangeNick={(nick) => {
-					console.log(`Changing nick ...`, nick)
+					log(`Changing nick ...`, nick)
 					if (channelConnection) {
 						channelConnection.client.user
 							.updateFriendlyName(nick)
 							.then(() => {
-								console.log(`Updated nick to ${nick}.`)
+								log(`Updated nick to ${nick}.`)
 							})
 							.catch((error) => {
 								setError({

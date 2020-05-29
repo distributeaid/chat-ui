@@ -6,6 +6,7 @@ import { v4 } from 'uuid'
 import * as TE from 'fp-ts/lib/TaskEither'
 import { verifyToken } from './Twilio/api'
 import { pipe } from 'fp-ts/lib/pipeable'
+import { logError } from '../log'
 
 export enum SlashCommand {
 	HELP = 'help',
@@ -27,10 +28,6 @@ type UpdateMessages = React.Dispatch<
 		lastIndex?: number | undefined
 	}>
 >
-
-const logError = (err: Error) => {
-	console.error(err)
-}
 
 export const SlashCommandHandler = ({
 	apollo,
@@ -73,8 +70,7 @@ export const SlashCommandHandler = ({
 			)
 			break
 		case SlashCommand.JOIN:
-			console.log(token)
-			if (!arg || !arg.length) {
+			if (arg === undefined || arg.length === 0) {
 				showMessage(
 					<p>
 						You must provide a channel name, e.g.:{' '}
