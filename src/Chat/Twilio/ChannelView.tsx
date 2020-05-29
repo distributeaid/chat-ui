@@ -83,7 +83,7 @@ export const ChannelView = ({
 	const [authorSubscriptions, setAuthorSubscriptions] = useState<AuthorMap>({})
 	const [authorNicks, setAuthorNicks] = useState<AuthorNicks>({})
 	useEffect(() => {
-		;() => {
+		return () => {
 			Object.values(authorSubscriptions).map(async (author) =>
 				author.unsubscribe(),
 			)
