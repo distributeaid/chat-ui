@@ -30,7 +30,7 @@
     "@commitlint/config-angular": "^8.3.4",
     "@semantic-release/commit-analyzer": "^8.0.1",
     "@svgr/webpack": "^5.4.0",
-    "@types/react": "^16.9.36",
+    "@types/react": "^16.9.37",
     "@types/react-dom": "^16.9.8",
     "@types/showdown": "^1.9.3",
     "@types/styled-components": "^5.1.0",
@@ -68,7 +68,7 @@
   "dependencies": {
     "@apollo/client": "^3.0.0-beta.20",
     "feather-icons": "^4.28.0",
-    "fp-ts": "^2.6.5",
+    "fp-ts": "^2.6.6",
     "graphql": "^15.1.0",
     "graphql-tag": "^2.10.3",
     "react": "^16.13.1",
@@ -76,7 +76,7 @@
     "react-dom": "^16.13.1",
     "react-feather": "^2.0.8",
     "showdown": "^1.9.1",
-    "snyk": "^1.339.0",
+    "snyk": "^1.342.2",
     "styled-components": "^5.1.1",
     "uuid": "^8.1.0"
   },
