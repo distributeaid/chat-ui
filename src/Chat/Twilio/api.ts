@@ -51,7 +51,7 @@ const createChatToken = ({
 					variables: { deviceId, token },
 				})
 				.then(({ data }) => {
-					if (data === undefined) {
+					if (data === undefined || data === null) {
 						throw new Error(
 							'Creating chat token failed! (No response returned.)',
 						)
@@ -79,7 +79,7 @@ export const verifyToken = ({
 					variables: { token },
 				})
 				.then(({ data }) => {
-					if (data === undefined) {
+					if (data === undefined || data === null) {
 						throw new Error('No response received!')
 					} else {
 						const { identity, contexts } = data.verifyToken
@@ -202,7 +202,7 @@ export const enableChannelNotifications = ({
 					variables: { token, channel, email },
 				})
 				.then(({ data }) => {
-					if (data === undefined) {
+					if (data === undefined || data === null) {
 						throw new Error('No response received!')
 					} else {
 						return data.enableChannelNotifications
@@ -233,7 +233,7 @@ export const verifyEmail = ({
 					variables: { code, email },
 				})
 				.then(({ data }) => {
-					if (data === undefined) {
+					if (data === undefined || data === null) {
 						throw new Error('No response received!')
 					} else {
 						return data.verifyEmail
