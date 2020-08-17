@@ -26,8 +26,8 @@
   "homepage": "https://github.com/distributeaid/chat-ui#readme",
   "devDependencies": {
     "@bifravst/code-style": "^8.0.1",
-    "@commitlint/cli": "^8.3.5",
-    "@commitlint/config-angular": "^8.3.4",
+    "@commitlint/cli": "^9.1.2",
+    "@commitlint/config-angular": "^9.1.2",
     "@semantic-release/commit-analyzer": "^8.0.1",
     "@svgr/webpack": "^5.4.0",
     "@types/react": "^16.9.37",
@@ -52,7 +52,7 @@
   },
   "husky": {
     "hooks": {
-      "commit-msg": "commitlint -e",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-commit": "lint-staged"
     }
   },
