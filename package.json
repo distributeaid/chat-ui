@@ -78,7 +78,7 @@
     "showdown": "^1.9.1",
     "snyk": "^1.355.0",
     "styled-components": "^5.1.1",
-    "uuid": "^8.2.0"
+    "uuid": "^8.3.0"
   },
   "release": {
     "branches": [
