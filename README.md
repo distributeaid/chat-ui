@@ -1,6 +1,7 @@
 # Distribute Aid in-app-chat UI
 
 ![Build and Release](https://github.com/distributeaid/chat-ui/workflows/Build%20and%20Release/badge.svg?branch=saga)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/f975a499-ea4f-4291-9a98-3f2e188225dc/deploy-status)](https://app.netlify.com/sites/distributeaid-chat-ui/deploys)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://dashboard.mergify.io/badges/distributeaid/chat-ui&style=flat)](https://mergify.io)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
