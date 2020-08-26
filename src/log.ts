@@ -1,11 +1,11 @@
-export const log = (...args: any): void =>
+export const log = (...args: any[]): void =>
 	console.log(
 		'%cChat',
 		'background-color: #3543ec; color: #ffffff; padding: 0.25rem;',
 		...args,
 	)
 
-export const logError = (...args: any): void =>
+export const logError = (...args: any[]): void =>
 	console.error(
 		'%cChat%cError',
 		'background-color: #3543ec; color: #ffffff; padding: 0.25rem;',
@@ -13,7 +13,7 @@ export const logError = (...args: any): void =>
 		...args,
 	)
 
-export const logDebug = (...args: any): void =>
+export const logDebug = (...args: any[]): void =>
 	console.debug(
 		'%cChat%cDebug',
 		'background-color: #3543ec; color: #ffffff; padding: 0.25rem;',

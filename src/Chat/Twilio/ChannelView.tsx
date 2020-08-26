@@ -479,7 +479,7 @@ export const ChannelView = ({
 									<MessageItem
 										key={m.message.sid}
 										message={{
-											timestamp: m.message.timestamp,
+											timestamp: m.message.dateCreated,
 											from: m.message.author,
 											message: m.message.body,
 											fromUser: m.message.author === identity,
