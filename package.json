@@ -76,7 +76,7 @@
     "react-dom": "16.13.1",
     "react-feather": "2.0.8",
     "showdown": "1.9.1",
-    "snyk": "1.385.1",
+    "snyk": "1.385.2",
     "styled-components": "5.1.1",
     "uuid": "8.3.0"
   },
