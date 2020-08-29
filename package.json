@@ -41,7 +41,7 @@
     "handlebars": "4.7.6",
     "husky": "4.2.5",
     "semantic-release": "17.1.1",
-    "source-map-loader": "1.0.2",
+    "source-map-loader": "1.1.0",
     "stream-buffers": "3.0.2",
     "ts-loader": "8.0.3",
     "twilio-chat": "4.0.0",
